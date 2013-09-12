@@ -28,6 +28,7 @@ class AtomFS:
     activity = float # current value of FS activity
     mismatch = float # current value of mismatch between goal and current state
     isActive = bool # presence of FS activity
+    learning = bool # learning state
     failed = bool # FS was unable to achive goal state  
     
     # FS parameters
@@ -41,15 +42,16 @@ class AtomFS:
         
     def __init__(self):
         """"Creates and initilize FS."""
-        self.ID = 0        
+        self.ID = 0
         self.activity = 0
         self.mismatch = 0
         self.isActive = False
         self.failed = False
+        self.learning = False
+        self.onTime = 0
         self.tau = 1
         self.k = 5       # k and x0 are choosen to have output 0.5 for normalized weighted 
         self.x0 = 0.5    # input of 0.5 and high activation for input = 1
-        self.onTime = 0 
         self.noise = 0.01 
         self.activationWeights = {}
         self.predictionWeights = {}
@@ -70,7 +72,8 @@ class AtomFS:
                 np.array(weightedIn)[:,1].sum())+np.rand()*sigma)# the argument is normalised 
      
     def weightsUpdate(self):
-        """Updates current weights of FS to exclude unimportant connections."""
+        """Updates current weights of FS to exclude unimportant connections.
+        @todo """
         pass
     
     def update(self, fsnet = {}): # net is a dictionary {FSID: AtomFS}
@@ -86,9 +89,12 @@ class AtomFS:
             if (self.mismatch >= self.threshold): # the goal state has been obtained
                 self.failed = False
                 self.isActive = False # FS is not needed any more
-                self.mismatch = 0                
-            else:
-                if (self.onTime > self.tau): # the goal is not achived in expected timeframe
+                self.mismatch = 0
+                if self.learning:
+                    self.tau = self.onTime
+                    self.learning = false
+            else: # the goal is not achived in expected timeframe
+                if ((self.onTime > self.tau) and not self.learning): 
                     self.failed = True
                     self.isActive = False
                     self.activity = 0  
@@ -104,7 +110,7 @@ class AtomFS:
                 self.isActive = True
                 self.onTime = 0 # internal time is reset   
                 
-        if (self.isActive or self.failed): # update FS lifetime
+        if (self.isActive or self.failed or self.learning): # update FS lifetime
             self.onTime += 1
         return self.activity
 
@@ -145,11 +151,8 @@ todo
     
     def addActionLinks(self, links=[]):
         """creates links between FSs. Input format [[start, end, weight]]"""
-#        if len(links) >= 1 :
         for lnk in range(len(links)):    
             self.net[links[lnk][1]].activationWeights[links[lnk][0]] = links[lnk][2]
-#        else:
-#            self.net[links[1]].activationWeights[links[0]] = links[2]
         
     def addPredictionLinks(self, links=[]):
         """creates links between FSs. Input format [[start, end, weight]]"""
@@ -160,7 +163,26 @@ todo
         """sets activations for listed FSs"""
         for fs in fs_list:
             self.net[fs].isActive = True
-            self.net[fs].activity = fs_list[fs]         
+            self.net[fs].activity = fs_list[fs] 
+            
+    def createFS(self, problemFS):
+        newFS = self.duplicate(problemFS)
+        # no need to worry the problem should be solved by new FS
+        problemFS.failed = False 
+        # update the problem state of the new FS with the current state
+        newFS.activationWeights.clear()
+        newFS.isActive = False
+        newFS.activity = 0
+        newFS.mismatch = 0
+        newFS.isActive = False
+        newFS.failed = False
+        newFS.onTime = 0
+        newFS.learning = True
+        for fs in self.net.keys():
+            if self.net[fs].isActive:
+                newFS.activationWeights[fs] = 1.
+        newFS.update(self)        
+        ### todo
     
     def update(self, inputStates = {}):
         """updates the network given values of activations for the input elements"""
@@ -169,6 +191,7 @@ todo
             self.net[inFS].activity = inputStates[inFS]
         for fs in (set(self.net.keys()) - set(inputStates.keys())):
             activation[fs] = self.net[fs].update(self.net)
+            """ todo: implement addition of weights from active FSs to currently learning FSs """
         return activation
             
     def drawNet(self):
@@ -197,7 +220,8 @@ todo
                 predictionWeights.append(self.net[fs].predictionWeights[synapse])
         node_layout = nx.circular_layout(G)  #nx.graphviz_layout(G,prog="neato")
         plot.cla()
-        nx.draw_networkx_nodes(G, pos=node_layout, node_color = net_activity, cmap = plot.cm.Reds)
+        nx.draw_networkx_nodes(G, pos=node_layout, node_color = net_activity,
+                               cmap = plot.cm.Reds)
         nx.draw_networkx_labels(G, pos=node_layout)        
         ar = plot.axes() 
         actArrStyle=dict(arrowstyle='simple',                                   
