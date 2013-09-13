@@ -26,6 +26,7 @@ class AtomFS:
                  # of the problem to be solved by FS
     goalState = [] # description (vector of values) of the required solution
     activity = float # current value of FS activity
+    activityOld = float # value of FS activiy on the previous time step
     mismatch = float # current value of mismatch between goal and current state
     isActive = bool # presence of FS activity
     learning = bool # learning state
@@ -44,6 +45,7 @@ class AtomFS:
         """"Creates and initilize FS."""
         self.ID = 0
         self.activity = 0
+        self.oldActivity = 0
         self.mismatch = 0
         self.isActive = False
         self.failed = False
@@ -82,7 +84,7 @@ class AtomFS:
         if (self.isActive or self.failed): 
             self.goalState = [] # updating the goal input
             for offFS in self.predictionWeights.keys(): # calculates weighted inputs for the FS deactivation
-                self.goalState += [[fsnet[offFS].activity, 
+                self.goalState += [[fsnet[offFS].oldActivity, 
                                     self.predictionWeights[offFS]]]
             self.mismatch = self.activation(self.goalState, self.k, 
                                                 self.x0, self.noise)
@@ -102,7 +104,7 @@ class AtomFS:
         else: # if FS is inactive or not failed
             self.problemState = [] # updating the problem input
             for onFS in self.activationWeights.keys(): # calculates weighted inputs for the FS activation
-                self.problemState += [[fsnet[onFS].activity, 
+                self.problemState += [[fsnet[onFS].oldActivity, 
                                        self.activationWeights[onFS]]]
             self.activity = self.activation (self.problemState, self.k, 
                                              self.x0, self.noise)
@@ -187,11 +189,16 @@ todo
     def update(self, inputStates = {}):
         """updates the network given values of activations for the input elements"""
         activation = {}
+        # activate elements (FSs) correspondent to inputs
         for inFS in inputStates.keys():
             self.net[inFS].activity = inputStates[inFS]
+        # update hidden and effector FSs
         for fs in (set(self.net.keys()) - set(inputStates.keys())):
             activation[fs] = self.net[fs].update(self.net)
             """ todo: implement addition of weights from active FSs to currently learning FSs """
+        # update history of activity
+        for fs in (set(self.net.keys()) - set(inputStates.keys())):
+            self.net[fs].oldActivity = activation[fs]
         return activation
             
     def drawNet(self):
@@ -255,8 +262,3 @@ todo
         plot.draw()
         plot.show()        
         # todo - handle self-links
-        
-        
-            
-        
-        
