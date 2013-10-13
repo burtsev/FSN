@@ -184,18 +184,19 @@ todo
         self.net [fs.ID] = fs
         self.idCounter +=1
 
-    def duplicate(self, ID):
+    def duplicate(self, ID, outLnkDup = False): # outLnkDup is optional parameter
         """duplicates FS and returns offspring"""
         offspring = deepcopy(self.net[ID])
         offspring.parentID = ID
         #self.add(offspring)
-        for fs in self.net.keys():
-            if ID in self.net[fs].activationWeights:
-                self.net[fs].activationWeights[offspring.ID] = \
-                self.net[fs].activationWeights[ID]
-            if ID in self.net[fs].predictionWeights:
-                self.net[fs].predictionWeights[offspring.ID] = \
-                self.net[fs].predictionWeights[ID]
+        if outLnkDup:
+            for fs in self.net.keys():
+                if ID in self.net[fs].activationWeights:
+                  self.net[fs].activationWeights[offspring.ID] = \
+                  self.net[fs].activationWeights[ID]
+                if ID in self.net[fs].predictionWeights:
+                    self.net[fs].predictionWeights[offspring.ID] = \
+                    self.net[fs].predictionWeights[ID]
         return offspring
     
     def addActionLinks(self, links=[]):
@@ -220,11 +221,12 @@ todo
             self.net[fs].activity = fs_list[fs] 
             
     def createFS(self, problemFS):
-        newFS = self.duplicate(problemFS.ID)
+        newFS = self.duplicate(problemFS.ID) # duplication without copying outcoming links
         # no need to worry the problem should be solved by new FS
         # problemFS.failed = False 
         # update the problem state of the new FS with the current state
         newFS.activationWeights.clear()
+        newFS.predictionWeights.clear()
         newFS.isActive = False
         newFS.activity = 0
         newFS.mismatch = 0
@@ -233,10 +235,18 @@ todo
         newFS.onTime = 0
         newFS.learning = True
         newFS.activationWeights[problemFS.ID] = 1.
-        for fs in self.net.keys():
-            if self.net[fs].wasActive: newFS.activationWeights[fs] = 1.
+        """ перепроверить какие активации к каким моментам времент относятся
+        и какие действия, что вызывают  """
+        for fs in self.net.keys():      
+            # new FS should be activated in the state 
+            # that created the problem for the parent FS
+            if self.net[fs].wasActive: # проверить на необходимость учета только входов от среды
+               newFS.activationWeights[fs] = 1.           
+            # new FS should activate other FSs (i.e. 'motor' FS)
+            # that contribute to the memorising state transition
             if self.net[fs].isActive:
                 self.net[fs].activationWeights[newFS.ID] = 1.
+                # results of actions should be predicted by new FS
                 newFS.predictionWeights[fs] = 1.
                 
         #newFS.update(self)
@@ -276,7 +286,7 @@ todo
 #            newFS = self.createFS(self.net[self.failedFS[i]])
 #            self.workingMemory[newFS.ID] = newFS
             #if self.net[failedFS[i]].failed == False:
-                # if the goal has been achived create new FS connetcting  
+                # if the goal has been achived create new FS connecting  
                 # previous state and action with prediction of the goal
                        
         # update history of activity
