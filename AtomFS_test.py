@@ -23,7 +23,7 @@ FS1.ID = 2
 FSNet = {0: input1,
          1: input2,
          2: FS1}
-input1.oldActivity = input2.oldActivity = FS1.activity = FS1.mismatch = 0
+input1.oldActivity = input2.oldActivity = FS1.activity = FS1.mismatch = 0.
 plotData = [] # storage for results of FS simulation
 for i in range(5):
     FS1.update(FSNet)
@@ -31,13 +31,15 @@ for i in range(5):
     plotData.append([input1.oldActivity, input2.oldActivity,
                      FS1.activity, FS1.mismatch,
                      FS1.isActive, FS1.failed])
-FS1.tau = 1                     
+FS1.tau = 5     
+            
 input1.oldActivity = 1
 FS1.update(FSNet)
 plotData.append([input1.oldActivity, input2.oldActivity,
                      FS1.activity, FS1.mismatch,
                      FS1.isActive, FS1.failed])
 input1.oldActivity = 0
+FS1.update(FSNet) 
 input2.oldActivity = 1
 FS1.update(FSNet)
 plotData.append([input1.oldActivity, input2.oldActivity,
@@ -78,7 +80,7 @@ for i in range(5):
 input1.oldActivity = 1   
 #print FS1.onTime
 for i in range(10):
-    input1.oldActivity = 1
+    input1.oldActivity = input1.activity = 1
     FS1.update(FSNet)
     print FS1.onTime, ' failed?', FS1.failed    
     print FS1.goalState

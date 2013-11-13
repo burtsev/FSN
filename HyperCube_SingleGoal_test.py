@@ -8,6 +8,7 @@ Created on Wed Sep 11 09:01:40 2013
 """
 import FSNpy as FSN
 import matplotlib.pyplot as plt
+import scipy as np
 # import operator
 
 """inputs for binary string associated with a hypercube nodes
@@ -57,8 +58,8 @@ for i in range(dim): # create links of the initial network
     FSNet.addPredictionLinks([[i, i+2*dim, 1.]])
     # goal FS
     FSNet.addActionLinks([[i, 4*dim, 1.]])
-    FSNet.addActionLinks([[4*dim, i+2*dim, 1.]])
-    FSNet.addActionLinks([[4*dim, i+3*dim, 1.]])
+    #FSNet.addActionLinks([[4*dim, i+2*dim, 1.]])
+    #FSNet.addActionLinks([[4*dim, i+3*dim, 1.]])
     FSNet.addPredictionLinks([[i+dim, 4*dim, 1.]])
     # lateral inhibition
     for j in range (2*dim,4*dim):
@@ -70,35 +71,59 @@ for i in range(dim): # create links of the initial network
 #    # self-referent input
 #    FSNet.addActionLinks([[j, j, 1.9]])
 
-
 start = [0 for i in range(dim)] # start state
 goal = [1 for i in range(dim)] # goal state
 #FSNet.drawNet()
-currState = start
+currState = start[:]
 data = []
 goalFS = []
+goalsReached = 0
+goalsDyn = []
 #FSNet.activateFS(dict(zip(range(2*dim),inputMap(currState)))) 
-for t in range(1500):
+for t in range(5000):
     output = FSNet.update(inputMap(currState))
-    oldState = currState
+    oldState = currState[:]
     currState = outputMap(currState, dict((x, output[x]) for x in range(2*dim, 4*dim)))
-    print t, currState
+    print t
     print 'activations:', FSNet.activation
     print 'mismatches:', FSNet.mismatch
+    tau = {}
+    for fs in FSNet.net.keys():
+        tau[fs]=FSNet.net[fs].onTime
+    print 'on time', tau
+#    isact = {}
+#    for fs in FSNet.net.keys():
+#        isact[fs]=FSNet.net[fs].isActive
+#    print 'active', isact
     print 'active:', FSNet.activatedFS
     print 'failed:', FSNet.failedFS
+    print 'learning:', FSNet.learningFS
+    print 'mem trace:', FSNet.memoryTrace.keys()
+    print 'matched:', FSNet.matchedFS
+    print currState
     print '-'
     data += [[output[6],output[7],output[8],output[9],output[10],output[11]]]
-    goalFS.append([FSNet.activation[12],FSNet.mismatch[12],
-               FSNet.net[12].isActive,FSNet.net[12].failed])
-        
+    goalFS.append([FSNet.activation[12],FSNet.mismatch[12],FSNet.net[12].isActive,FSNet.net[12].failed])
+    goalsDyn.append(goalsReached)    
+    if (currState == goal):
+        if (oldState != goal):
+            goalsReached += 1
+        # break
+        if (np.rand() < 0.1):
+            currState = start[:]
+            print currState, start
+    if len(FSNet.matchedFS)>0:
+        plt.figure()
+        FSNet.drawNet()
+
+plt.figure()        
 gFSdata = zip(*goalFS)    
 plt.plot(data)
 plt.figure()
-plt.plot(gFSdata[0], color='red')
-plt.plot(gFSdata[1], color='blue')
-plt.bar(range(-1,(len(gFSdata[2])-1)),gFSdata[2],width=0.5,color='pink')
-plt.bar(range(-1,(len(gFSdata[3])-1)),gFSdata[3],width=0.8,color='lightBlue')
-plt.figure()
-FSNet.drawNet()
+plt.plot(goalsDyn)
+#plt.plot(gFSdata[0], color='red')
+#plt.plot(gFSdata[1], color='blue')
+#plt.bar(range(-1,(len(gFSdata[2])-1)),gFSdata[2],width=0.5,color='pink')
+#plt.bar(range(-1,(len(gFSdata[3])-1)),gFSdata[3],width=0.8,color='lightBlue')
+
 plt.show()

@@ -16,29 +16,38 @@ input1 = FSN.AtomFS()
 input2 = FSN.AtomFS()
 # FS which is tested
 FS1 = FSN.AtomFS()
-FS1.set_params(pw, gw, 15, 0.5, 0)
+FS1.set_params(pw, gw, 15, 0.95, 0.05)
 FSNet = FSN.FSNetwork()
 FSNet.add(input1)
 FSNet.add(input2)
 FSNet.add(FS1)
-FS1.activity = FS1.mismatch = 0
+FS1.activity = FS1.mismatch = 0.
 plotData = [] # storage for results of FS simulation
 worldState = {0:0,1:0}
 for i in range(10):
     FSNet.update(worldState)
-    #input1.activity += 0.2
+    #input1.activity += 0.2    
     plotData.append([input1.activity, input2.activity,
                      FS1.activity, FS1.mismatch,
                      FS1.isActive, FS1.failed])
 #input1.activity = 1
-worldState = {0:1,1:0}                    
-for i in range(10):
+worldState = {0:1.,1:0.}                    
+for i in range(5):
     FSNet.update(worldState)
     #input2.activity += 0.01
+    print input1.activity, input2.activity
     plotData.append([input1.activity, input2.activity,
                      FS1.activity, FS1.mismatch,
                      FS1.isActive, FS1.failed])
-    worldState = {0:0,1:0}
+    #worldState = {0:0,1:0}
+worldState = {0:0,1:0}
+for i in range(5):
+    FSNet.update(worldState)
+    #input2.activity += 0.01
+    print input1.activity, input2.activity
+    plotData.append([input1.activity, input2.activity,
+                     FS1.activity, FS1.mismatch,
+                     FS1.isActive, FS1.failed])
 worldState = {0:0,1:1}
 for i in range(10):
     FSNet.update(worldState)
