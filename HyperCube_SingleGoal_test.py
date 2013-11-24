@@ -45,7 +45,7 @@ def outputMap(state = [], outFSActivity = {}):
             break
     return state    
 
-dim = 10 # a dimension of a hypercube
+dim = 6 # a dimension of a hypercube
 period = 2000 # a period of simulation
 drawFSNet = False # draw FSNet for every FS addition
 FSNet = FSN.FSNetwork()
@@ -59,7 +59,7 @@ for i in range(dim): # create links of the initial network
     # outputs "1->0"
     FSNet.addActionLinks([[i+dim, i+2*dim, 1.]])
     FSNet.addPredictionLinks([[i, i+2*dim, 1.]])
-    # goal FS
+    # goal FS     1
     FSNet.addActionLinks([[i, 4*dim, 1.]])
     #FSNet.addActionLinks([[4*dim, i+2*dim, 1.]])
     #FSNet.addActionLinks([[4*dim, i+3*dim, 1.]])
@@ -67,9 +67,9 @@ for i in range(dim): # create links of the initial network
     # lateral inhibition
     for j in range (2*dim,4*dim):
         if j != (i+2*dim):
-            FSNet.addInhibitionLinks([[i+2*dim, j, 1.]])
+            FSNet.addInhibitionLinks([[i+2*dim, j, (1./(2*dim))]])
         if j != (i+3*dim):            
-            FSNet.addInhibitionLinks([[i+3*dim, j, 1.]])      
+            FSNet.addInhibitionLinks([[i+3*dim, j, (1./(2*dim))]])      
 #for j in range (2*dim,4*dim):
 #    # self-referent input
 #    FSNet.addActionLinks([[j, j, 1.9]])
@@ -89,6 +89,7 @@ for t in range(period):
     oldState = currState[:]
     currState = outputMap(currState, dict((x, output[x]) for x in range(2*dim, 4*dim)))
     print t
+    print 'goals:', goalsReached
 #    print 'activations:', FSNet.activation
 #    print 'mismatches:', FSNet.mismatch
     tau = {}

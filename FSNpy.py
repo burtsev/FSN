@@ -60,7 +60,7 @@ class AtomFS:
         self.learning = False
         self.threshold = 0.95
         self.onTime = 0
-        self.tau = 11
+        self.tau = 7
         self.k = 10      # k and x0 are choosen to have output 0.5 for normalized weighted 
         self.x0 = 0.5    # input of 0.5 and high activation for input = 1
         self.noise = 0.1
@@ -91,7 +91,7 @@ class AtomFS:
             wInSum += 2*(0.5-np.rand())*sigma
             neg = np.array(weightedNegIn).prod(1).sum()
             if (neg > 0):
-                wInSum -= neg/np.array(weightedNegIn)[:,1].sum()
+                wInSum -= neg#/np.array(weightedNegIn)[:,1].sum()
         else: # self amplification is not required for the prediction
             wInSum = (np.array(weightedIn).prod(1).sum()/ 
                         np.array(weightedIn)[:,1].sum()) # the argument is normalised      
@@ -135,12 +135,13 @@ class AtomFS:
         self.goalState = [] # updating the goal input
         for offFS in self.predictionWeights.keys(): 
         # calculates weighted inputs for the FS deactivation
-            self.goalState += [[fsnet[offFS].oldActivity, 
+            if not fsnet[offFS].learning:
+                self.goalState += [[fsnet[offFS].oldActivity, 
                                 self.predictionWeights[offFS]]]
                                 
         # goal recognition should be more definite than activation, hence, k=10 and noise=0
-        # if len(self.predictionWeights.keys())>0:            
-        self.mismatch = self.activation(self.goalState,10, 
+        if len(self.predictionWeights.keys())>0:            
+            self.mismatch = self.activation(self.goalState,10, 
                                             self.x0, 0, 
                                             prediction = True)
         if (self.mismatch >= self.threshold): # the goal state has been obtained
@@ -164,7 +165,7 @@ class AtomFS:
         #if (not self.learning):
         self.wasActive.pop(0)
         self.wasActive.append(self.isActive)
-        if (not self.isActive):
+        if (not self.failed):
             self.updateActivation(fsnet)
 #        if ((self.isActive and self.wasActive[-1] == False) 
 #            and not self.failed and not self.learning): 
@@ -247,6 +248,7 @@ class FSNetwork:
         newFS.learning = True
         # FS is relevant to the problem of the parent FS
         newFS.activationWeights[problemFS.ID] = 1.
+        # problemFS.predictionWeights[newFS.ID] = 1.
         # alernative behavior inhibits failed behavior
         problemFS.inhibitionWeights[newFS.ID] = 1.
 
@@ -257,17 +259,18 @@ class FSNetwork:
             if self.net[fs].isInput: # проверить на необходимость учета только входов от среды
                if self.net[fs].wasActive[-1]:
                    newFS.activationWeights[fs] = 1.
-            else:
-                if self.net[fs].wasActive[-2]:
-                    newFS.activationWeights[fs] = 1.
+#            else:
+#                if self.net[fs].wasActive[-2]:
+                    #newFS.activationWeights[fs] = 1.
             
             # new FS should activate other FSs (i.e. 'motor' FS)
             # that contribute to the memorising state transition
             if (self.net[fs].wasActive[-1] and 
-                not (self.net[fs].learning or self.net[fs].isInput)):
+                not (self.net[fs].learning or self.net[fs].isInput 
+                    or fs==newFS.parentID)):
                 self.net[fs].activationWeights[newFS.ID] = 1.
                 #newFS.predictionWeights[fs] = 1. # alt to the next line
-                newFS.inhibitionWeights[self.net[fs].ID] = 1.
+                #newFS.inhibitionWeights[self.net[fs].ID] = 1.
                 
             # results of actions (i.e. neurons activated after actions)
             # should be predicted by new FS            
