@@ -60,7 +60,7 @@ class AtomFS:
         self.learning = False
         self.threshold = 0.95
         self.onTime = 0
-        self.tau = 4
+        self.tau = 11
         self.k = 10      # k and x0 are choosen to have output 0.5 for normalized weighted 
         self.x0 = 0.5    # input of 0.5 and high activation for input = 1
         self.noise = 0.1
@@ -139,6 +139,7 @@ class AtomFS:
                                 self.predictionWeights[offFS]]]
                                 
         # goal recognition should be more definite than activation, hence, k=10 and noise=0
+        # if len(self.predictionWeights.keys())>0:            
         self.mismatch = self.activation(self.goalState,10, 
                                             self.x0, 0, 
                                             prediction = True)
@@ -147,14 +148,15 @@ class AtomFS:
             self.isActive = False # FS is not needed any more
             self.mismatch = 0
             self.onTime = 0
+            self.activity = 0
 #            if self.learning:
 #                self.tau = self.onTime
 #                self.learning = False
         else: # the goal is not achived in expected timeframe
             if ((self.onTime >= self.tau)): #and not self.learning): 
                 self.failed = True
-                self.isActive = False
-                self.activity = 0  
+                #self.isActive = False
+                #self.activity = 0  
         return self.mismatch
     
     def update(self, fsnet = {}): # net is a dictionary {FSID: AtomFS}
@@ -167,7 +169,7 @@ class AtomFS:
 #        if ((self.isActive and self.wasActive[-1] == False) 
 #            and not self.failed and not self.learning): 
 #            self.onTime = 0 # internal time is reset 
-        if ((self.isActive or self.failed) and not self.learning): 
+        if ((self.isActive or self.failed) and not self.learning):   
             self.updatePrediction(fsnet)
         # if FS is inactive or not failed            
 #        else: 
@@ -249,20 +251,28 @@ class FSNetwork:
         problemFS.inhibitionWeights[newFS.ID] = 1.
 
         for fs in self.net.keys():      
+            
             # new FS should be activated in the state 
             # that created the problem for the parent FS
-            if self.net[fs].wasActive[-2]: # проверить на необходимость учета только входов от среды
-               newFS.activationWeights[fs] = 1.           
+            if self.net[fs].isInput: # проверить на необходимость учета только входов от среды
+               if self.net[fs].wasActive[-1]:
+                   newFS.activationWeights[fs] = 1.
+            else:
+                if self.net[fs].wasActive[-2]:
+                    newFS.activationWeights[fs] = 1.
+            
             # new FS should activate other FSs (i.e. 'motor' FS)
             # that contribute to the memorising state transition
             if (self.net[fs].wasActive[-1] and 
                 not (self.net[fs].learning or self.net[fs].isInput)):
                 self.net[fs].activationWeights[newFS.ID] = 1.
-                newFS.predictionWeights[fs] = 1. # alt to the next line
-                #newFS.inhibitionWeights[self.net[fs].ID] = 1.
-            if (self.net[fs].isActive and self.net[fs].onTime==1):
-                # results of actions (i.e. neurons activated after actions)
-                # should be predicted by new FS
+                #newFS.predictionWeights[fs] = 1. # alt to the next line
+                newFS.inhibitionWeights[self.net[fs].ID] = 1.
+                
+            # results of actions (i.e. neurons activated after actions)
+            # should be predicted by new FS            
+            if (self.net[fs].isActive and self.net[fs].onTime==1 
+                and self.net[fs].isInput):
                 newFS.predictionWeights[fs] = 1.       
         
         #newFS.update(self)
@@ -419,19 +429,16 @@ class FSNetwork:
         nx.draw_networkx_labels(G, pos=node_layout)        
         ar = plot.axes() 
         actArrStyle=dict(arrowstyle='simple',                                   
-                      shrinkA=20,
-                      shrinkB=20,
-                      fc="red",ec="none",
+                      shrinkA=20, shrinkB=20, aa=True,                      
+                      fc="red",ec="none", alpha=0.6,
                       connectionstyle="arc3,rad=-0.1",)
         inhibitionArrStyle=dict(arrowstyle='simple',                                   
-                      shrinkA=20,
-                      shrinkB=20,
-                      fc="blue",ec="none",
+                      shrinkA=20, shrinkB=20, aa=True,
+                      fc="blue",ec="none", alpha=0.6,
                       connectionstyle="arc3,rad=-0.8",)
         predArrStyle=dict(arrowstyle='simple',                                   
-                      shrinkA=20,
-                      shrinkB=20,
-                      fc="green",ec="none",
+                      shrinkA=20, shrinkB=20, aa=True,
+                      fc="green",ec="none", alpha=0.6,
                       connectionstyle="arc3,rad=0.7",)
         for vertex in G.edges(keys=True,data=True): # drawing links
             #print vertex

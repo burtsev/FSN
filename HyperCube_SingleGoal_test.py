@@ -41,10 +41,13 @@ def outputMap(state = [], outFSActivity = {}):
     for fs in FSNet.net.keys():
         if FSNet.net[fs].isActive and (fs in range(2*dim,4*dim)):
             winFS = fs
-            state[winFS % dim] = int(winFS/dim)-2    
+            state[winFS % dim] = int(winFS/dim)-2
+            break
     return state    
 
-dim = 3 # dimension of a hypercube
+dim = 10 # a dimension of a hypercube
+period = 2000 # a period of simulation
+drawFSNet = False # draw FSNet for every FS addition
 FSNet = FSN.FSNetwork()
 for i in range(2*dim+2*dim+1): # initial FSs: inputs + effectors + goal
     FSNet.add(FSN.AtomFS())
@@ -79,18 +82,19 @@ data = []
 goalFS = []
 goalsReached = 0
 goalsDyn = []
+NFSDyn = []
 #FSNet.activateFS(dict(zip(range(2*dim),inputMap(currState)))) 
-for t in range(5000):
+for t in range(period):
     output = FSNet.update(inputMap(currState))
     oldState = currState[:]
     currState = outputMap(currState, dict((x, output[x]) for x in range(2*dim, 4*dim)))
     print t
-    print 'activations:', FSNet.activation
-    print 'mismatches:', FSNet.mismatch
+#    print 'activations:', FSNet.activation
+#    print 'mismatches:', FSNet.mismatch
     tau = {}
     for fs in FSNet.net.keys():
         tau[fs]=FSNet.net[fs].onTime
-    print 'on time', tau
+#    print 'on time', tau
 #    isact = {}
 #    for fs in FSNet.net.keys():
 #        isact[fs]=FSNet.net[fs].isActive
@@ -102,28 +106,42 @@ for t in range(5000):
     print 'matched:', FSNet.matchedFS
     print currState
     print '-'
-    data += [[output[6],output[7],output[8],output[9],output[10],output[11]]]
-    goalFS.append([FSNet.activation[12],FSNet.mismatch[12],FSNet.net[12].isActive,FSNet.net[12].failed])
-    goalsDyn.append(goalsReached)    
+    #data += [[output[6],output[7],output[8],output[9],output[10],output[11]]]
+    fs_dyn = []
+    for j in sorted(FSNet.activation.iterkeys()):
+        if j>(dim-1) :
+            fs_dyn += [FSNet.activation[j]]
+    data += [fs_dyn]
+    #goalFS.append([FSNet.activation[12],FSNet.mismatch[12],FSNet.net[12].isActive,FSNet.net[12].failed])
+    goalsDyn.append(goalsReached) 
+    NFSDyn.append(len(FSNet.net.keys()))
     if (currState == goal):
         if (oldState != goal):
             goalsReached += 1
         # break
-        if (np.rand() < 0.1):
+        if (np.rand() < 0.5) and (len(FSNet.activatedFS)==dim):
             currState = start[:]
             print currState, start
-    if len(FSNet.matchedFS)>0:
+    if len(FSNet.matchedFS)>0 and drawFSNet:
         plt.figure()
         FSNet.drawNet()
 
-plt.figure()        
-gFSdata = zip(*goalFS)    
-plt.plot(data)
-plt.figure()
+plt.figure()  
+plt.subplot(3,1,1)      
+plt.pcolor(array(zip(*data)))
+plt.title('out FS dynamics')
+#plt.figure()
+plt.subplot(3,1,2) 
 plt.plot(goalsDyn)
+plt.title('goals reached')
+plt.subplot(3,1,3) 
+plt.plot(NFSDyn)
+plt.title('number of FS')
+#gFSdata = zip(*goalFS)  
 #plt.plot(gFSdata[0], color='red')
 #plt.plot(gFSdata[1], color='blue')
 #plt.bar(range(-1,(len(gFSdata[2])-1)),gFSdata[2],width=0.5,color='pink')
 #plt.bar(range(-1,(len(gFSdata[3])-1)),gFSdata[3],width=0.8,color='lightBlue')
-
+#plt.figure()
+#FSNet.drawNet()
 plt.show()
