@@ -10,25 +10,31 @@ import matplotlib.pyplot as plt
 import scipy as np
 
 
-def sigm(x): # sigmoid activation function    
+def sigm(x): # sigmoid activation function
     return 1/(1+np.exp(10*(x-0.5)))
-def sigmoid(x, ex=0, inh=0, n=0, k=10): # sigmoid activation function
+def sigmoid(x, ex=0, inh=0, n=0, k=10, x0 = 0.5): # sigmoid activation function
     nz = 2*(0.5-np.rand())*n
-    return 1/(1+np.exp(-k*((ex+nz+x)/2-inh-0.5)))
+    return 1/(1+np.exp(-k*(((ex+x)/2+nz-inh)-x0)))
 
-res = 10
+res = 100
 pltData = []
-e = 0.4
+pltDataXX = []
+pltDataX = []
+e = 0.5
 i = 0.
-n = 0.05
+n = 0.
 for st in range(res):
     x = (st+1.)/res
     for t in range(5):
         pltData.append(x)
-    for t in range(10):
+    for t in range(15):
         print t, x
+        pltDataX.append(x)
+        pltDataXX.append(sigmoid(x,e,i,n))
         x = sigmoid(x,e,i,n)
         pltData.append(x)
 
 plt.plot(pltData)
+#plt.figure()
+#plt.plot(pltDataX,pltDataXX)
 plt.show()
