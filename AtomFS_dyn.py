@@ -13,10 +13,10 @@ FSNet = FSN.FSNetwork()
 # inputs
 inputs = []
 hidden = []
-nIn = 10
-nHid = 5
-res = 20
-period = 100
+nIn = 30
+nHid = 1
+res = 3
+period = 200
 for fs in range(nIn):
     inputs.append(FSN.AtomFS())
     FSNet.add(inputs[fs])
@@ -58,7 +58,7 @@ for fs in range(nIn):
     inAct[fs] = 1.
 
 for initFS1 in range(res):
-    print ((initFS1+1.)/res)
+    print ((initFS1+0.)/res)
     for hid in range(nHid):
         hidden[hid].oldActivity = 0 #(initFS1+1.)/res
         hidden[hid].activity = 0 #(initFS1+1.)/res
@@ -68,9 +68,10 @@ for initFS1 in range(res):
     plotData = []
     #for fs in range(nIn):
         #inAct[fs] = (initFS1+0.)/res
-    inAct[0] = (initFS1+1.)/res
+    inAct[0] = (initFS1+0.)/res
     FSNet.update(inAct.copy())
-    plotData.append([hidden[hid2].activity for hid2 in range(nHid)])
+    plotData.append([hidden[hid2].activity
+                        for hid2 in range(nHid)])
 #    for fs in range(nIn):
 #        inAct[fs] = 0.
     for t in range(period):
@@ -78,19 +79,22 @@ for initFS1 in range(res):
             FSNet.update(inAct.copy())
             #print inAct
 
-        plotData.append([hidden[hid2].activity for hid2 in range(nHid)])
+        plotData.append([hidden[hid2].activity
+                            for hid2 in range(nHid)])
     plots.extend(plotData)
 
 for fs in range(nIn):
     inAct[fs] = 0.
 plotData = []
 FSNet.update(inAct.copy())
-plotData.append([hidden[hid2].activity for hid2 in range(nHid)])
+plotData.append([hidden[hid2].activity
+                    for hid2 in range(nHid)])
 for t in range(period):
     if t > 4:
         FSNet.update(inAct.copy())
         #print inAct
-    plotData.append([hidden[hid2].activity for hid2 in range(nHid)])
+    plotData.append([hidden[hid2].activity
+                        for hid2 in range(nHid)])
 
 #        pd = zip(*plotData)
 #        plt.plot(pd[0],pd[1])
@@ -98,25 +102,27 @@ plots.extend(plotData)
 
 # testing inhibition
 for fs in range(nIn):
-    inAct[fs] = 0.31
+    inAct[fs] = 1.
     for hid in range(nHid):
         hidden[hid].activationWeights[fs] = 0.
         hidden[hid].inhibitionWeights[fs] = 1.
 
 plotData = []
 FSNet.update(inAct.copy())
-plotData.append([hidden[hid2].activity for hid2 in range(nHid)])
+plotData.append([hidden[hid2].activity
+                    for hid2 in range(nHid)])
 for t in range(period):
     if t > 4:
         FSNet.update(inAct.copy())
-    plotData.append([hidden[hid2].activity for hid2 in range(nHid)])
-
+    plotData.append([hidden[hid2].activity
+                        for hid2 in range(nHid)])
 
 plots.extend(plotData)
 
 #print plotData
 #pd = zip(*plotData) #transposing array
 #plt.plot(plots)#plotData[1])
+
 FSNet.drawNet()
 plt.figure()
 plt.plot(plots)

@@ -10,6 +10,11 @@ Created on Sun Sep 01 14:25:22 2013
 import scipy as np
 from copy import deepcopy
 
+""" Some general functions.
+"""
+def sigmoid(x, k, x0): # sigmoid activation function
+    return 1/(1+np.exp(-k*(x-x0)))
+
 class AtomFS:
     """Class for the elementary functional system (FS).
 
@@ -19,28 +24,16 @@ class AtomFS:
         3) tracking time of transition from the problem to the goal
     """
     # FS attributes
+    # - metadata
     ID = int # FS identificator
     parentID = int # identificator of parent FS
-    onTime = int # the period of current FS's activity
-    problemState = [] # description (vector of values)
-                 # of the problem to be solved by FS
-    goalState = [] # description (vector of values) of the required solution
-    activity = float # current value of FS activity
-    activityOld = float # value of FS activiy on the previous time step
-    mismatch = float # current value of mismatch between goal and current state
-    isActive = bool # presence of FS activity
-    wasActive = [] # history of FS activity
-    learning = bool # learning state
-    failed = bool # FS was unable to achive goal state
-    isInput = bool # is true if value is set externally
-    isOutput = bool # is true if the value is not predicted
-
-    # FS parameters
+    # - structural parameters
     activationWeights = {} # wieghts for the problemState input
     predictionWeights = {} # weights for the goal input
-    inhibitionWeights = {} # weights for the lateral inhibition
-    rateOfWeightLearning = 0.1
-    tau = float # expected time required for transition from the problem to the goal state
+    lateralWeights = {} # weights for the lateral inhibition
+    controlWeights = {}    # weights for the top-down control
+    # - dynamical parameters
+    tau = float # expected time for transition from the problem to the goal state
     threshold = float # for the activation
     noise = float # random value to be added to the FS activation
     k = float
@@ -48,10 +41,25 @@ class AtomFS:
     pr_threshold = float # for the prediction
     pr_k = float
     pr_x0 = float
-
+    rateOfWeightLearning = 0.1
+    # - state variables
+    problemState = [] # input for the features of the problem to be solved by FS
+    goalState = [] # input for the features of the required solution
+    inhibitionState = [] # input for the lateral inhibition
+    controlState = [] # input for the top-down control
+    activity = float # current value of FS activity
+    activityOld = float # value of FS activiy on the previous time step
+    wasActive = [] # history of FS activity
+    onTime = int # the period of current FS's activity
+    mismatch = float # current value of mismatch between goal and current state
+    isActive = bool # presence of FS activity
+    isLearning = bool # learning state
+    failed = bool # FS was unable to achive goal state
+    isInput = bool # is true if value is set externally
+    isOutput = bool # is true if the value is not predicted
 
     def __init__(self):
-        """"Create and initilize FS."""
+        """"Create and initialize FS."""
         self.ID = 0
         self.activity = 0.
         self.oldActivity = 0.
@@ -63,46 +71,70 @@ class AtomFS:
         for i in range(2): # depth of the activation memory is 2
             self.wasActive.append(False)
         self.failed = False
-        self.learning = False
+        self.isLearning = False
         self.onTime = 0
         self.tau = 50
-        self.k = 20      # k and x0 are choosen to have output 0.5 for normalized weighted
+        self.k = 30      # k and x0 are choosen to have output 0.5 for normalized weighted
         self.x0 = 0.5    # input of 0.5 and high activation for input = 1
         self.threshold = 0.95
         self.pr_k = self.k
         self.pr_x0 = self.x0
         self.pr_threshold = self.threshold
-        self.noise = 0.05
+        self.noise = 0.01
         self.activationWeights = {}
         self.predictionWeights = {}
-        self.inhibitionWeights = {}
+        self.lateralWeights = {}
+        self.controlWeights = {}
 
-    def set_params(self, pw, gw, t, th, n):
+    def set_params(self, pw, gw, t, th, n, cw={0:0}):
         """"set parameters of FS."""
         self.activationWeights = pw
         self.predictionWeights = gw
+        self.controlWeights = cw
         self.threshold = th
         self.tau = t
         self.noise = n
 
-    def sigmoid(self, x, k, x0): # sigmoid activation function
-        return 1/(1+np.exp(-k*(x-x0)))
+    def calcProblemActivation(self):
+        """Returns a value of activation for the weighted input."""
+        # calculation of sum of weighted inputs (positive weights)
+        wInSum = np.array([[self.problemState[fs],self.activationWeights[fs]]
+                    for fs in self.activationWeights.iterkeys()
+                    if fs in self.problemState]
+                        ).prod(1).sum()
+        if (wInSum > 0): # weighted sum is normalised
+             wInSum = wInSum/sum(w for w in self.activationWeights.itervalues())
+        # adding noise
+        wInSum += 2*(0.5-np.rand())*self.noise
 
-    def activate(self, weightedIn, k, x0, sigma,
-                   weightedNegIn = [[0,0]], norm = True):
-        """Returns a value of activation for the weighted input.
+    def activate(self):
+        """Returns a value of activation for the weighted input."""
+        # calculation of sum of weighted inputs (positive weights)
+        wInSum = np.array([[self.problemState[fs],self.activationWeights[fs]]
+                    for fs in self.activationWeights.iterkeys()
+                    if fs in self.problemState]
+                        ).prod(1).sum()
+        if (wInSum > 0): # weighted sum is normalised
+             wInSum = wInSum/sum(w for w in self.activationWeights.itervalues())
+        # positive feedback from own activity to stay active
+        # when the activated (problem) input is gone
+        wInSum = wInSum*0.36+self.oldActivity
+        # adding noise
+        wInSum += 2*(0.5-np.rand())*self.noise
+        # calculation of sum of weighted inputs (negative weights)
+        # TODO : незабыть, что когда будет введена возможность латерального
+        #        возбуждения надо будет убрать знак минус перед взвешенной
+        #        суммой при ее добавлении к аргументу.
+        sumInhW = sum(w for w in self.lateralWeights.itervalues())
+        if (sumInhW>0):
+            wInhIn = [[self.problemState[fs],self.lateralWeights[fs]]
+                    for fs in self.lateralWeights.iterkeys()
+                    if fs in self.problemState]
+            if (len(wInhIn)>0): # weighted sum is normalised
+                wInSum -= np.array(wInhIn).prod(1).sum()/sumInhW
+        return sigmoid(wInSum, self.k, self.x0)
 
-        weightedIn is a list of pairs [input_activation, weight]"""
-        wInSum = (np.array(weightedIn).prod(1).sum())
-        if (norm and wInSum>0):
-             wInSum = wInSum/np.array(weightedIn)[:,1].sum()
-        wInSum = wInSum*0.305+self.oldActivity
-        wInSum += 2*(0.5-np.rand())*sigma
-        summW = np.array(weightedNegIn)[:,1].sum()
-        if (summW>0):
-            neg = np.array(weightedNegIn).prod(1).sum()/summW
-            wInSum -= neg
-        return self.sigmoid(wInSum, k, x0)
+проводить расчет для каждого из входов отдельно, а затем собирать в ФС элементе
 
     def predict(self, weightedIn, k, x0, sigma,
                    weightedNegIn = [[0,0]], norm = True):
@@ -112,7 +144,7 @@ class AtomFS:
         wInSum = np.array(weightedIn).prod(1).sum()
         if (norm and wInSum>0):# the argument is normalised
             wInSum = wInSum/np.array(weightedIn)[:,1].sum()
-        return self.sigmoid(wInSum, k, x0)
+        return sigmoid(wInSum, k, x0)
 
     def weightsUpdate(self, fsnet = {}):
         """Updates current weights of FS to exclude unimportant connections"""
@@ -122,22 +154,9 @@ class AtomFS:
                     self.activationWeights[fs] -= self.rateOfWeightLearning
                 else: self.activationWeights[fs] = 0
 
-    def updateActivation(self, fsnet = {}):
+    def updateActivation(self):
         """Updates activation of FS"""
-        self.problemState = [[0,0]] # updating the problem input
-        for onFS in self.activationWeights.keys():
-        # calculates weighted inputs for the FS activation
-            if (not fsnet[onFS].learning): #fsnet[onFS].isActive
-                self.problemState += [[fsnet[onFS].oldActivity,
-                                   self.activationWeights[onFS]]]
-        competition = [[0,0]] # updating the inhibition
-        for onFS in self.inhibitionWeights.keys():
-        # calculates weighted inputs for the FS activation
-            if ((fsnet[onFS].isActive) and not fsnet[onFS].learning):
-                competition += [[fsnet[onFS].oldActivity,
-                                   self.inhibitionWeights[onFS]]]
-        self.activity = self.activate(self.problemState, self.k,
-                                      self.x0, self.noise, competition)
+        self.activity = self.activate()
         # FS is activated if it's problem state is present
         if (self.activity >= self.threshold):
             self.isActive = True
@@ -151,7 +170,7 @@ class AtomFS:
         self.goalState = [] # updating the goal input
         for offFS in self.predictionWeights.keys():
         # calculates weighted inputs for the FS deactivation
-            if not fsnet[offFS].learning:
+            if not fsnet[offFS].isLearning:
                 self.goalState += [[fsnet[offFS].oldActivity,
                                 self.predictionWeights[offFS]]]
 
@@ -165,11 +184,11 @@ class AtomFS:
             self.mismatch = 0
             self.onTime = 0
             self.activity = 0
-#            if self.learning:
+#            if self.isLearning:
 #                self.tau = self.onTime
-#                self.learning = False
+#                self.isLearning = False
         else: # the goal is not achived in expected timeframe
-            if ((self.onTime == self.tau)): #and not self.learning):
+            if ((self.onTime == self.tau)): #and not self.isLearning):
                 self.failed = True
                 #self.isActive = False
                 self.activity = 0
@@ -177,28 +196,16 @@ class AtomFS:
 
     def update(self, fsnet = {}): # net is a dictionary {FSID: AtomFS}
         """Updates current state of FS."""
-        #if (not self.learning):
         self.wasActive.pop(0)
         self.wasActive.append(self.isActive)
-#        if (not self.failed):
-        self.updateActivation(fsnet)
+        self.updateActivation()
         if self.isActive and self.wasActive[-2] == False:
-#            and not self.failed and not self.learning):
             self.onTime = 0 # internal time is reset
-
-        # it is possible that learning removed of obstacle of the failed FS
-        # (i.e. problem state of the FS is matching)
-        # now failed FS should be tried to get to the goal
-#        if (self.isActive and self.failed):
-#            self.failed = False
-#            self.onTime = 0
-
         if ((self.wasActive[-2] or self.isActive or self.failed)
-            and not self.learning and not self.isOutput):
+            and not self.isLearning and not self.isOutput):
             self.updatePrediction(fsnet)
-
         # update FS lifetime
-        if (self.isActive or self.failed or self.learning or not self.isOutput):
+        if (self.isActive or self.failed or self.isLearning or not self.isOutput):
             self.onTime += 1
         return self.activity, self.mismatch
 
@@ -213,6 +220,7 @@ class AtomFS:
         self.onTime = 0
         self.activity = 0
         self.activityOld = 0
+# end of AtomFS class
 
 class FSNetwork:
     """Implements a network of functional systems"""
@@ -250,9 +258,9 @@ class FSNetwork:
                 if ID in self.net[fs].activationWeights.keys():
                   self.net[fs].activationWeights[offspring.ID] = \
                   self.net[fs].activationWeights[ID]
-                if ID in self.net[fs].inhibitionWeights.keys():
-                    self.net[fs].inhibitionWeights[offspring.ID] = \
-                    self.net[fs].inhibitionWeights[ID]
+                if ID in self.net[fs].lateralWeights.keys():
+                    self.net[fs].lateralWeights[offspring.ID] = \
+                    self.net[fs].lateralWeights[ID]
 #                if ID in self.net[fs].predictionWeights.keys():
 #                    self.net[fs].predictionWeights[offspring.ID] = \
 #                    self.net[fs].predictionWeights[ID]
@@ -264,8 +272,8 @@ class FSNetwork:
         for fs in self.net.keys():
             if ID in self.net[fs].activationWeights.keys():
                 del self.net[fs].activationWeights[ID]
-            if ID in self.net[fs].inhibitionWeights.keys():
-                del self.net[fs].inhibitionWeights[ID]
+            if ID in self.net[fs].lateralWeights.keys():
+                del self.net[fs].lateralWeights[ID]
             if ID in self.net[fs].predictionWeights.keys():
                 del self.net[fs].predictionWeights[ID]
 
@@ -274,20 +282,20 @@ class FSNetwork:
         # update the problem state of the new FS with the current state
         newFS.activationWeights.clear()
         newFS.predictionWeights.clear()
-        newFS.inhibitionWeights.clear()
+        newFS.lateralWeights.clear()
         newFS.isActive = False
         newFS.activity = 1.
         newFS.oldActivity = 1.
         newFS.mismatch = 0.
         newFS.failed = False
         newFS.onTime = 0
-        newFS.learning = True
+        newFS.isLearning = True
         # FS is relevant to the problem of the parent FS
         newFS.activationWeights[problemFS.ID] = 1.
-        newFS.inhibitionWeights[problemFS.ID] = 1.
+        newFS.lateralWeights[problemFS.ID] = 1.
         # problemFS.predictionWeights[newFS.ID] = 1.
         # alernative behavior inhibits failed behavior
-        problemFS.inhibitionWeights[newFS.ID] = 1.
+        problemFS.lateralWeights[newFS.ID] = 1.
 
         for fs in self.net.keys():
 
@@ -304,12 +312,12 @@ class FSNetwork:
             # that contribute to the memorising state transition
             if (self.net[fs].wasActive[-2] and
                 #problemFS.ID in self.matchedFS and
-                not (self.net[fs].learning or self.net[fs].isInput
+                not (self.net[fs].isLearning or self.net[fs].isInput
                     or self.net[fs].failed or fs==newFS.parentID)):
                     #or self.net[fs].wasActive[-1])):
                 self.net[fs].activationWeights[newFS.ID] = 1.
                 #newFS.predictionWeights[fs] = 1. # alt to the next line
-                #newFS.inhibitionWeights[self.net[fs].ID] = 1.
+                #newFS.lateralWeights[self.net[fs].ID] = 1.
 
             # results of actions (i.e. neurons activated after actions)
             # should be predicted by new FS
@@ -330,6 +338,20 @@ class FSNetwork:
         # update activations and predictions of hidden and effector FSs
 #        for cycle in range(3): # convergence loop
         for fs in (set(self.net.keys()) - set(inputStates.keys())):
+#            self.problemState = {} # updating the problem input
+            self.net[fs].problemState = {k: self.net[k].oldActivity
+                for k in self.net[fs].activationWeights.iterkeys()
+                    if not self.net[k].isLearning}
+            self.net[fs].problemState.update({k: self.net[k].oldActivity
+                for k in self.net[fs].lateralWeights.iterkeys()
+                    if self.net[k].isActive and not self.net[k].isLearning})
+            self.net[fs].problemState.update({k: self.net[k].oldActivity
+                for k in self.net[fs].predictionWeights.iterkeys()
+                    if not self.net[k].isLearning})
+            self.net[fs].problemState.update({k: self.net[k].oldActivity
+                for k in self.net[fs].controlWeights.iterkeys()
+                    if not self.net[k].isLearning})
+
             self.activation[fs], self.mismatch[fs] = self.net[fs].update(self.net)
         # update history of activity
         self.logActivity(inputStates)
@@ -374,7 +396,7 @@ class FSNetwork:
 #                for fs in self.memoryTrace.keys():
 #                    if self.net[fs].parentID == self.failedFS[i]:
 #                        del self.memoryTrace[self.net[fs].ID]
-#                        self.net[fs].learning = False
+#                        self.net[fs].isLearning = False
 #                        self.net[fs].onTime = 0
 
         # activate new memory trace for the matched FSs
@@ -382,7 +404,7 @@ class FSNetwork:
             for fs in self.memoryTrace.keys():
                 if self.net[fs].parentID == self.matchedFS[i]:
                     del self.memoryTrace[fs]
-                    self.net[fs].learning = False
+                    self.net[fs].isLearning = False
                     self.net[fs].onTime = 0
 
 #        self.memoryTrace = {}
@@ -396,7 +418,7 @@ class FSNetwork:
     def addInhibitionLinks(self, links=[]):
         """creates  inhibition links between FSs. Input format [[start, end, weight]]"""
         for lnk in range(len(links)):
-            self.net[links[lnk][1]].inhibitionWeights[links[lnk][0]] = links[lnk][2]
+            self.net[links[lnk][1]].lateralWeights[links[lnk][0]] = links[lnk][2]
 
     def addPredictionLinks(self, links=[]):
         """creates links between FSs. Input format [[start, end, weight]]"""
@@ -427,7 +449,6 @@ class FSNetwork:
 
     def setOutFS(self, fs_list):
         """marks listed FSs as outputs"""
-
         for outFS in range(len(fs_list)):
             self.net[fs_list[outFS]].isOutput = True
 
@@ -442,14 +463,14 @@ class FSNetwork:
         for fs in (set(self.net.keys()) - set(inputStates.keys())):
             self.net[fs].oldActivity = self.activation[fs]
             # if FS has failed to reach predicted state
-            if (self.net[fs].failed and not self.net[fs].learning):
+            if (self.net[fs].failed and not self.net[fs].isLearning):
                self.failedFS.append(self.net[fs].ID) # add FS to the failers list
                if self.net[fs].ID in wasFailed:
                    wasFailed.remove(self.net[fs].ID)
             # if FS is active
             if self.net[fs].isActive:
                self.activatedFS.append(self.net[fs].ID)
-            if self.net[fs].learning:
+            if self.net[fs].isLearning:
                 self.learningFS.append(fs)
         self.matchedFS = wasFailed[:]
     # end of logActivity
@@ -473,7 +494,7 @@ class FSNetwork:
         actionEdges = []
         actionWeights = []
         inhibitionEdges = []
-        inhibitionWeights = []
+        lateralWeights = []
         predictionEdges = []
         predictionWeights = []
         net_activity = []
@@ -489,11 +510,11 @@ class FSNetwork:
                            weight=self.net[fs].predictionWeights[synapse])
                 predictionEdges.append((synapse, fs))
                 predictionWeights.append(self.net[fs].predictionWeights[synapse])
-            for synapse in self.net[fs].inhibitionWeights.keys():
+            for synapse in self.net[fs].lateralWeights.keys():
                 G.add_edge(synapse, fs, key=2,
-                           weight=self.net[fs].inhibitionWeights[synapse])
+                           weight=self.net[fs].lateralWeights[synapse])
                 inhibitionEdges.append((synapse, fs))
-                inhibitionWeights.append(self.net[fs].inhibitionWeights[synapse])
+                lateralWeights.append(self.net[fs].lateralWeights[synapse])
         node_layout = nx.circular_layout(G)  #nx.graphviz_layout(G,prog="neato")
         plot.cla()
         nx.draw_networkx_nodes(G, pos=node_layout, node_size=1200,

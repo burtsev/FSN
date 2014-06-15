@@ -125,7 +125,7 @@ start = [0 for i in range(dim)] # start state
 goal = [1 for i in range(dim)] # goal state
 #-------------------------
 convergenceLoops = 10 # a number of FS network updates per world's state update
-period = 500 # a period of simulation
+period = 50 # a period of simulation
 #------------------------
 #FSNet.drawNet()
 currState = start[:]
