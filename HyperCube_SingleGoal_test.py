@@ -92,9 +92,9 @@ for i in range(2*dim+2*dim+2*dim+1):
 
 for i in range(dim): # create links of the initial network
     # outputs "0->1"
-    FSNet.addActionLinks([[i+5*dim, i+3*dim, 1.]])
+    FSNet.addControlLinks([[i+5*dim, i+3*dim, 1.]])
     # outputs "1->0"
-    FSNet.addActionLinks([[i+4*dim, i+2*dim, 1.]])
+    FSNet.addControlLinks([[i+4*dim, i+2*dim, 1.]])
     # intermediate layer "0->1"
     FSNet.addActionLinks([[i, i+5*dim, 1.]])
     #FSNet.addActionLinks([[6*dim, i+5*dim, 1.]])
@@ -110,13 +110,13 @@ for i in range(dim): # create links of the initial network
     # lateral inhibition
     for j in range (4*dim,6*dim):
         if j != (i+4*dim):
-            FSNet.addInhibitionLinks([[i+4*dim, j, (1./(2*dim))]])
+            FSNet.addLateralLinks([[i+4*dim, j, (1./(2*dim))]])
         if j != (i+5*dim):
-            FSNet.addInhibitionLinks([[i+5*dim, j, (1./(2*dim))]])
+            FSNet.addLateralLinks([[i+5*dim, j, (1./(2*dim))]])
         if j != (i+4*dim):
-            FSNet.addInhibitionLinks([[i+2*dim, (j-2*dim), (1./(2*dim))]])
+            FSNet.addLateralLinks([[i+2*dim, (j-2*dim), (1./(2*dim))]])
         if j != (i+5*dim):
-            FSNet.addInhibitionLinks([[i+3*dim, (j-2*dim), (1./(2*dim))]])
+            FSNet.addLateralLinks([[i+3*dim, (j-2*dim), (1./(2*dim))]])
 
 
 FSNet.setOutFS([i for i in range(2*dim,4*dim)])
@@ -124,8 +124,8 @@ FSNet.setOutFS([i for i in range(2*dim,4*dim)])
 start = [0 for i in range(dim)] # start state
 goal = [1 for i in range(dim)] # goal state
 #-------------------------
-convergenceLoops = 10 # a number of FS network updates per world's state update
-period = 50 # a period of simulation
+convergenceLoops = 1 # a number of FS network updates per world's state update
+period = 500 # a period of simulation
 #------------------------
 #FSNet.drawNet()
 currState = start[:]
@@ -142,9 +142,9 @@ for t in range(period):
         currState = outputMap(currState,
                               [(output[x],x) for x in range(2*dim, 4*dim)],
                               stateTr)
-    print t
+    print 't', t
     print 'goals:', goalsReached
-#    print 'activations:', FSNet.activation
+    print 'activations:', FSNet.activation
 #    print 'mismatches:', FSNet.mismatch
 #    tau = {}
 #    for fs in FSNet.net.keys():

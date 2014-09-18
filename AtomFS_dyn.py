@@ -13,7 +13,7 @@ FSNet = FSN.FSNetwork()
 # inputs
 inputs = []
 hidden = []
-nIn = 30
+nIn = 1
 nHid = 1
 res = 3
 period = 200
@@ -35,12 +35,12 @@ for hid in range(nHid):
     for hid2 in range(nHid):
         if (hid != hid2):
             links.append([(nIn+hid),(nIn+hid2),1.])
-FSNet.addInhibitionLinks(links)
+#FSNet.addLateralLinks(links)
 links = []
 for fs in range(nIn):
     for hid in range(nHid):
         links.append([fs,(nIn+hid),0.])
-FSNet.addPredictionLinks(links)
+#FSNet.addPredictionLinks(links)
 
 plotData = [] # storage for results of FS simulation
 plots = []
@@ -83,6 +83,7 @@ for initFS1 in range(res):
                             for hid2 in range(nHid)])
     plots.extend(plotData)
 
+FSNet.resetActivity()
 for fs in range(nIn):
     inAct[fs] = 0.
 plotData = []
@@ -101,11 +102,12 @@ for t in range(period):
 plots.extend(plotData)
 
 # testing inhibition
+FSNet.resetActivity()
 for fs in range(nIn):
     inAct[fs] = 1.
     for hid in range(nHid):
-        hidden[hid].activationWeights[fs] = 0.
-        hidden[hid].inhibitionWeights[fs] = 1.
+        #hidden[hid].problemWeights[fs] = 0.
+        hidden[hid].lateralWeights[fs] = 1.
 
 plotData = []
 FSNet.update(inAct.copy())
@@ -117,7 +119,7 @@ for t in range(period):
     plotData.append([hidden[hid2].activity
                         for hid2 in range(nHid)])
 
-plots.extend(plotData)
+#plots.extend(plotData)
 
 #print plotData
 #pd = zip(*plotData) #transposing array

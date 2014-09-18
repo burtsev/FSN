@@ -11,104 +11,111 @@ import matplotlib.pyplot as plt
 # weights to FS's inputs
 pw = {0: 1., 1: 0.}
 gw = {0: 0., 1: 1.}
-# inputs
-input1 = FSN.AtomFS()
-input2 = FSN.AtomFS()
 # FS which is tested
 FS1 = FSN.AtomFS()
-FS1.set_params(pw, gw, 7, 0.5, 0)
-input1.ID = 0
-input2.ID = 1
-FS1.ID = 2
-FSNet = {0: input1,
-         1: input2,
-         2: FS1}
-input1.oldActivity = input2.oldActivity = FS1.activity = FS1.mismatch = 0.
+FS1.set_params(pw, gw, 10, 0.5, 0)
+print 'pw:', FS1.problemWeights,'gw:',FS1.goalWeights
+FS1.problemState = FS1.goalState = {0: 0., 1: 0.}
 plotData = [] # storage for results of FS simulation
 for i in range(5):
-    FS1.update(FSNet)
+    FS1.update()
+    print FS1.problemState,'act:',FS1.activity,'wIn:',FS1.calcProblemActivation(),'mismatch:',FS1.mismatch
     #input1.oldActivity += 0.2
-    plotData.append([input1.oldActivity, input2.oldActivity,
-                     FS1.activity, FS1.mismatch,
-                     FS1.isActive, FS1.failed])
-FS1.tau = 5     
-            
-input1.oldActivity = 1
-FS1.update(FSNet)
-plotData.append([input1.oldActivity, input2.oldActivity,
-                     FS1.activity, FS1.mismatch,
-                     FS1.isActive, FS1.failed])
-input1.oldActivity = 0
-FS1.update(FSNet) 
-input2.oldActivity = 1
-FS1.update(FSNet)
-plotData.append([input1.oldActivity, input2.oldActivity,
-                     FS1.activity, FS1.mismatch,
-                     FS1.isActive, FS1.failed])
-input2.oldActivity = 0 
-input1.oldActivity = 1 
-for i in range(5):              
-    
-    FS1.update(FSNet)
-    plotData.append([input1.oldActivity, input2.oldActivity,
-                         FS1.activity, FS1.mismatch,
-                         FS1.isActive, FS1.failed])
-    input1.oldActivity = 0 
+    plotData.append([FS1.problemState[0], FS1.problemState[1],
+                     FS1.activity,( FS1.mismatch-0.01),
+                     FS1.isActive, (FS1.failed+0.01)])
+#FS1.tau = 5
 
-input2.oldActivity = 1 
-FS1.update(FSNet)
-plotData.append([input1.oldActivity, input2.oldActivity,
-                     FS1.activity, FS1.mismatch,
-                     FS1.isActive, FS1.failed])
-input2.oldActivity = 0                      
+FS1.problemState = FS1.goalState = {0: 1., 1: 0.}
+FS1.update()
+print FS1.problemState,'act:',FS1.activity,'wIn:',FS1.calcProblemActivation(),'mismatch:',FS1.mismatch
+plotData.append([FS1.problemState[0], FS1.problemState[1],
+                     FS1.activity,( FS1.mismatch-0.01),
+                     FS1.isActive, (FS1.failed+0.01)])
+FS1.problemState = FS1.goalState = {0: 0., 1: 0.}
+FS1.update()
+print FS1.problemState,'act:',FS1.activity,'wIn:',FS1.calcProblemActivation(),'mismatch:',FS1.mismatch
+plotData.append([FS1.problemState[0], FS1.problemState[1],
+                     FS1.activity,( FS1.mismatch-0.01),
+                     FS1.isActive, (FS1.failed+0.01)])
+FS1.problemState = FS1.goalState = {0: 0., 1: 1.}
+FS1.update()
+print FS1.problemState,'act:',FS1.activity,'wIn:',FS1.calcProblemActivation(),'mismatch:',FS1.mismatch
+plotData.append([FS1.problemState[0], FS1.problemState[1],
+                     FS1.activity,( FS1.mismatch-0.01),
+                     FS1.isActive, (FS1.failed+0.01)])
+FS1.problemState = FS1.goalState = {0: 1., 1: 0.}
+FS1.update()
+print FS1.problemState,'act:',FS1.activity,'wIn:',FS1.calcProblemActivation(),'mismatch:',FS1.mismatch
+for i in range(5):
+    FS1.update()
+    print FS1.problemState,'act:',FS1.activity,'wIn:',FS1.calcProblemActivation(),'mismatch:',FS1.mismatch
+    plotData.append([FS1.problemState[0], FS1.problemState[1],
+                     FS1.activity,( FS1.mismatch-0.01),
+                     FS1.isActive, (FS1.failed+0.01)])
+    FS1.problemState = FS1.goalState = {0: 0., 1: 0.}
+
+FS1.problemState = FS1.goalState = {0: 0., 1: 1.}
+FS1.update()
+print FS1.problemState,'act:',FS1.activity,'wIn:',FS1.calcProblemActivation(),'mismatch:',FS1.mismatch
+plotData.append([FS1.problemState[0], FS1.problemState[1],
+                     FS1.activity,( FS1.mismatch-0.01),
+                     FS1.isActive, (FS1.failed+0.01)])
+FS1.problemState = FS1.goalState = {0: 0., 1: 0.}
 FS1.tau = 7
 for i in range(5):
-    FS1.update(FSNet)
+    FS1.update()
+    print FS1.problemState,'act:',FS1.activity,'wIn:',FS1.calcProblemActivation(),'mismatch:',FS1.mismatch
     #input2.oldActivity += 0.01
-    plotData.append([input1.oldActivity, input2.oldActivity,
-                     FS1.activity, FS1.mismatch,
-                     FS1.isActive, FS1.failed])
-    input1.oldActivity = 0
-input2.oldActivity = 1
-for i in range(5):
-    FS1.update(FSNet)
-    #input1.oldActivity += 0.01
-    plotData.append([input1.oldActivity, input2.oldActivity,
-                     FS1.activity, FS1.mismatch,
-                     FS1.isActive, FS1.failed])
-    input2.oldActivity = 0 
-input1.oldActivity = 1   
+    plotData.append([FS1.problemState[0], FS1.problemState[1],
+                     FS1.activity,( FS1.mismatch-0.01),
+                     FS1.isActive, (FS1.failed+0.01)])
+
+#FS1.problemState = FS1.goalState = {0: 0., 1: 1.}
+#for i in range(5):
+#    FS1.update()
+#    print FS1.problemState,'act:',FS1.activity,'wIn:',FS1.calcProblemActivation(),'mismatch:',FS1.mismatch
+#    #input1.oldActivity += 0.01
+#    plotData.append([FS1.problemState[0], FS1.problemState[1],
+#                     FS1.activity,( FS1.mismatch-0.01),
+#                     FS1.isActive, (FS1.failed+0.01)])
+#    FS1.problemState = FS1.goalState = {0: 0., 1: 0.}
+FS1.problemState = FS1.goalState = {0: 1., 1: 0.}
 #print FS1.onTime
 for i in range(10):
-    input1.oldActivity = input1.activity = 1
-    FS1.update(FSNet)
-    print FS1.onTime, ' failed?', FS1.failed    
+    FS1.update()
+    print FS1.problemState,'act:',FS1.activity,'wIn:',FS1.calcProblemActivation(),'mismatch:',FS1.mismatch
+    print FS1.onTime, ' failed?', FS1.failed
     print FS1.goalState
-    plotData.append([input1.oldActivity, input2.oldActivity,
-                     FS1.activity, FS1.mismatch,
-                     FS1.isActive, FS1.failed])
+    plotData.append([FS1.problemState[0], FS1.problemState[1],
+                     FS1.activity,( FS1.mismatch-0.01),
+                     FS1.isActive, (FS1.failed+0.01)])
     #input1.oldActivity = 0
-input1.oldActivity =  1                   
-for i in range(5):
-    FS1.update(FSNet)   
-    plotData.append([input1.oldActivity, input2.oldActivity,
-                     FS1.activity, FS1.mismatch,
-                     FS1.isActive, FS1.failed])
-    input1.oldActivity = 0
-input2.oldActivity = 1
+
 for i in range(3):
-    FS1.update(FSNet)   
-    plotData.append([input1.oldActivity, input2.oldActivity,
-                     FS1.activity, FS1.mismatch,
-                     FS1.isActive, FS1.failed])  
-    input2.oldActivity = 0
+    FS1.update()
+    print FS1.onTime, ' failed?', FS1.failed
+    plotData.append([FS1.problemState[0], FS1.problemState[1],
+                     FS1.activity,( FS1.mismatch-0.01),
+                     FS1.isActive, (FS1.failed+0.01)])
+    FS1.problemState = FS1.goalState = {0: 0., 1: 0.}
+FS1.problemState = FS1.goalState = {0: 0., 1: 1.}
+for i in range(3):
+    FS1.update()
+    print FS1.onTime, ' failed?', FS1.failed
+    plotData.append([FS1.problemState[0], FS1.problemState[1],
+                     FS1.activity,( FS1.mismatch-0.01),
+                     FS1.isActive, (FS1.failed+0.01)])
+    FS1.problemState = FS1.goalState = {0: 0., 1: 0.}
 pd = zip(*plotData) #transposing array
+plt.axes([0.05,0.05,0.7,0.9])
 #in1_plt, in2_plt, fsa_plt, fsm_plt, fsab_plt, fsf_plt = plt.subplots(nrows=6)
 in1_plt = plt.bar(range(-1,(len(pd[0])-1)), pd[0], label = 'action input', color = 'pink')
 in2_plt = plt.bar(range(-1,(len(pd[1])-1)), pd[1], label = 'goal input',  color = 'lightgreen')
-fsa_plt = plt.plot(pd[2], label = 'FS activity', linewidth=3)
-fsm_plt = plt.plot(pd[3], label = 'FS goal match', linewidth=2)
-fsab_plt = plt.plot(pd[4], label = 'FS activated', linewidth=2, color = 'red')
+fsab_plt = plt.plot(pd[4], label = 'FS activated', linewidth=6, color = 'yellow')
+fsa_plt = plt.plot(pd[2], label = 'FS activity', linewidth=2, color = 'red')
+fsm_plt = plt.plot(pd[3], label = 'FS goal match', linewidth=2, color = 'green')
 fsf_plt = plt.plot(pd[5], label = 'FS failed', linewidth=2,  color = 'blue')
-plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+plt.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0)
 plt.show()
