@@ -60,7 +60,7 @@ def outputMap(state = [], outFSActivity = [], trans = []): # TODO
         newState[wFS % dim] = int(wFS/dim)-2
         if trans[st2Ind(state)][st2Ind(newState)]:
                 state = newState[:]
-
+        print 'act:',wFS,' ->',state
     return state
 
 def setTransitions(dim):
@@ -83,7 +83,7 @@ def setTransitions(dim):
 
 
 dim = 2 # a dimension of a hypercube
-drawFSNet = False # draw FSNet for every FS addition
+drawFSNet = True # draw FSNet for every FS addition
 stateTr = setTransitions(dim)
 FSNet = FSN.FSNetwork()
 # create initial FSs: inputs + effectors + interFS + goalFS
@@ -92,9 +92,9 @@ for i in range(2*dim+2*dim+2*dim+1):
 
 for i in range(dim): # create links of the initial network
     # outputs "0->1"
-    FSNet.addControlLinks([[i+5*dim, i+3*dim, 1.]])
+    FSNet.addControlLinks([[i+5*dim, i+3*dim, 2.]])
     # outputs "1->0"
-    FSNet.addControlLinks([[i+4*dim, i+2*dim, 1.]])
+    FSNet.addControlLinks([[i+4*dim, i+2*dim, 2.]])
     # intermediate layer "0->1"
     FSNet.addActionLinks([[i, i+5*dim, 1.]])
     #FSNet.addActionLinks([[6*dim, i+5*dim, 1.]])
@@ -108,15 +108,16 @@ for i in range(dim): # create links of the initial network
     FSNet.addPredictionLinks([[i+dim, 6*dim, 1.]])
 
     # lateral inhibition
+    cInh = 1.5*dim
     for j in range (4*dim,6*dim):
         if j != (i+4*dim):
-            FSNet.addLateralLinks([[i+4*dim, j, (1./(2*dim))]])
+            FSNet.addLateralLinks([[i+4*dim, j, (cInh*1./(1*dim))]])
         if j != (i+5*dim):
-            FSNet.addLateralLinks([[i+5*dim, j, (1./(2*dim))]])
+            FSNet.addLateralLinks([[i+5*dim, j, (cInh*1./(1*dim))]])
         if j != (i+4*dim):
-            FSNet.addLateralLinks([[i+2*dim, (j-2*dim), (1./(2*dim))]])
+            FSNet.addLateralLinks([[i+2*dim, (j-2*dim), (cInh*1./(1*dim))]])
         if j != (i+5*dim):
-            FSNet.addLateralLinks([[i+3*dim, (j-2*dim), (1./(2*dim))]])
+            FSNet.addLateralLinks([[i+3*dim, (j-2*dim), (cInh*1./(1*dim))]])
 
 
 FSNet.setOutFS([i for i in range(2*dim,4*dim)])
@@ -124,8 +125,8 @@ FSNet.setOutFS([i for i in range(2*dim,4*dim)])
 start = [0 for i in range(dim)] # start state
 goal = [1 for i in range(dim)] # goal state
 #-------------------------
-convergenceLoops = 1 # a number of FS network updates per world's state update
-period = 500 # a period of simulation
+convergenceLoops = 5 # a number of FS network updates per world's state update
+period = 50 # a period of simulation
 #------------------------
 #FSNet.drawNet()
 currState = start[:]
@@ -134,6 +135,7 @@ goalFS = []
 goalsReached = 0
 goalsDyn = []
 NFSDyn = []
+
 #FSNet.activateFS(dict(zip(range(2*dim),inputMap(currState))))
 for t in range(period):
     output = FSNet.update(inputMap(currState))
@@ -144,8 +146,8 @@ for t in range(period):
                               stateTr)
     print 't', t
     print 'goals:', goalsReached
-    print 'activations:', FSNet.activation
-#    print 'mismatches:', FSNet.mismatch
+    print 'activations:', {k:round(v,2) for k,v in FSNet.activation.iteritems()}
+    print 'mismatches:', {k:round(v,2) for k,v in FSNet.mismatch.iteritems()}
 #    tau = {}
 #    for fs in FSNet.net.keys():
 #        tau[fs]=FSNet.net[fs].onTime
@@ -165,7 +167,7 @@ for t in range(period):
     #data += [[output[6],output[7],output[8],output[9],output[10],output[11]]]
     fs_dyn = []
     for j in sorted(FSNet.activation.iterkeys()):
-        if j>(dim-1) :
+        if j>(dim-1):
             fs_dyn += [FSNet.activation[j]]
     data += [fs_dyn]
     #goalFS.append([FSNet.activation[12],FSNet.mismatch[12],FSNet.net[12].isActive,FSNet.net[12].failed])
@@ -181,7 +183,8 @@ for t in range(period):
             FSNet.resetActivity()
             print currState, start
     if len(FSNet.matchedFS)>0 and drawFSNet:
-        plt.figure()
+        plt.figure(num=('t:'+str(t)))
+        plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)
         FSNet.drawNet()
 
 plt.figure()

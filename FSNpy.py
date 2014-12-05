@@ -39,6 +39,7 @@ class AtomFS:
     goalWeights = {} # weights for the goal input
     lateralWeights = {} # weights for the lateral inhibition
     controlWeights = {}    # weights for the top-down control
+    plasticWeights = {} # temporary weights for predictive features of env.
     # - dynamical parameters
     tau = float # expected time for transition from the problem to the goal state
     threshold = float # for the activation
@@ -74,9 +75,10 @@ class AtomFS:
         self.goalWeights = {}
         self.lateralWeights = {}
         self.controlWeights = {}
-        self.tau = 5
+        self.plasticWeights = {}
+        self.tau = 6
         self.threshold = 0.95
-        self.noise = 0.01
+        self.noise = 0.1
         self.k = 10      # k and x0 are choosen to have output 0.5 for normalized weighted
         self.x0 = 0.5    # input of 0.5 and high activation for input = 1
         self.pr_threshold = self.threshold
@@ -94,7 +96,7 @@ class AtomFS:
         self.failed = False
         self.isInput = False
         self.isOutput = False
-        self.exactInputMatch = False
+        self.exactInputMatch = True
 
     def set_params(self, pw, gw, t, th, n, cw={0:0}):
         """"set parameters of FS."""
@@ -134,8 +136,8 @@ class AtomFS:
         if (len(self.lateralState)==0):
             return 0
         wInSum = weightedSum(self.lateralState,self.lateralWeights)
-        if (wInSum != 0): # weighted sum is normalised
-                wInSum = wInSum/sum(w for w in self.lateralWeights.itervalues())
+#        if (wInSum != 0): # weighted sum is normalised
+#                wInSum = wInSum/sum(w for w in self.lateralWeights.itervalues())
         return wInSum
 
     def calcControlActivation(self):
@@ -153,13 +155,21 @@ class AtomFS:
             self.isActive = False
             self.activity = 0
             self.onTime = 0
+            if (self.calcGoalMismatch()>= self.pr_threshold):
+                self.failed = False
+            else:
+                self.problemWeights.update(self.plasticWeights)
+                print '%#%# learned fs',self.ID
+                print ' wpr:',self.problemWeights
+                print ' pl w:',self.plasticWeights
         else:
             wInSum = self.oldActivity
             wInSum += self.calcProblemActivation()
             wInSum -= self.calcLateralActivation()
             wInSum += self.calcControlActivation()
             wInSum += 2*(0.5-np.rand())*self.noise
-            if self.wasActive[-1]:
+            #if self.wasActive[-1] and not self.isOutput:
+            if not self.isOutput:
                 wInSum -= self.calcGoalMismatch()
             self.activity = sigmoid(wInSum, self.k, self.x0)
             if (self.activity >= self.threshold):
@@ -168,9 +178,10 @@ class AtomFS:
                 self.isActive = False
             if (self.mismatch >= self.pr_threshold): #the goal state has been obtained
                 self.failed = False
+                self.plasticWeights = {}
                 #self.mismatch = 0
                 self.onTime = 0
-            if (self.isActive):
+            if (self.isActive and not self.isOutput):
                 self.onTime += 1
         # TODO : незабыть, что когда будет введена возможность латерального
         #        возбуждения надо будет убрать знак минус перед взвешенной
@@ -261,7 +272,10 @@ class FSNetwork:
                 del self.net[fs].goalWeights[ID]
 
     def createFS(self, problemFS):
-        newFS = self.duplicate(problemFS.ID, outLnkDup = True) # duplication
+        if problemFS.failed: # duplication
+            newFS = self.duplicate(problemFS.ID, outLnkDup = False)
+        else:
+            newFS = self.duplicate(problemFS.ID, outLnkDup = True)
         # update the problem state of the new FS with the current state
         newFS.problemWeights.clear()
         newFS.goalWeights.clear()
@@ -274,12 +288,29 @@ class FSNetwork:
         newFS.onTime = 0
         newFS.isLearning = True
         # FS is relevant to the problem of the parent FS
-        newFS.problemWeights[problemFS.ID] = 1.
-        newFS.lateralWeights[problemFS.ID] = 1.
+        # newFS.problemWeights[problemFS.ID] = 1.
+        # newFS.lateralWeights[problemFS.ID] = 1.
         # problemFS.goalWeights[newFS.ID] = 1.
         # alernative behavior inhibits failed behavior
         problemFS.lateralWeights[newFS.ID] = 1.
+# TODO реализовать два типа обучения - 
+        """ 
+1) ошибка(failed) - формируется ФС торомозящая ошибочное действие в ситуации
+ВХОД - проблемная ситуация в которой ФС не смогла реализоваться
+ВЕСА = запоминают чем отличается проблемная ситуация в которой ФС активировалась,
+от стандартной => для этого надо временно запоминать для каждой активировавшейся ФС,
+чем текущая ситуация отличается от стандартной. Например, создавать ФС, которая
+будет неактивна пока старая ФС ждет результат. Если результат получен, то 
+резервная ФС удаляется, если нет, то от нее формируется тормозный вес на 
+старую ФС.
+ Или просто добавлять тормозные связи в саму ФС? ТОгда в момент активации ФС 
+ "запоминает" отличающиеся входы с тормозными синапсами, но они актуализируются
+ только в случае отсутствия результата.
 
+2) успех(matched) - формируется ФС возбуждающая правильное действие
+# ? Два случая различаются только знаком (типом - торм или возб) веса от 
+новой ФС к моторной ФС?
+        """
         for fs in self.net.keys():
 
             # new FS should be activated in the state
@@ -287,55 +318,63 @@ class FSNetwork:
             if self.net[fs].isInput: # TODO проверить на необходимость учета только входов от среды
                if self.net[fs].wasActive[-1]:
                    newFS.problemWeights[fs] = 1.
-#            else:
-#                if self.net[fs].wasActive[-2]:
-                    #newFS.problemWeights[fs] = 1.
 
             # new FS should activate other FSs (i.e. 'motor' FS)
             # that contribute to the memorising state transition
-            if (self.net[fs].wasActive[-1] and
-                #problemFS.ID in self.matchedFS and
-                not (self.net[fs].isLearning or self.net[fs].isInput
-                    or self.net[fs].failed or fs==newFS.parentID)):
-                    #or self.net[fs].wasActive[-1])):
-                self.net[fs].problemWeights[newFS.ID] = 1.
-                #newFS.goalWeights[fs] = 1. # alt to the next line
-                #newFS.lateralWeights[self.net[fs].ID] = 1.
+            if ( (problemFS.ID in self.matchedFS)and 
+                 self.net[fs].wasActive[-1]      and
+                 not (self.net[fs].isLearning or self.net[fs].isInput
+                    or self.net[fs].failed or fs == newFS.parentID)):
+                    self.net[fs].problemWeights[newFS.ID] = 1.
 
             # results of actions (i.e. neurons activated after actions)
             # should be predicted by new FS
-            if (self.net[fs].isActive and self.net[fs].onTime==1
+            if (self.net[fs].isActive and self.net[fs].onTime == 1
                 and self.net[fs].isInput):
                 newFS.goalWeights[fs] = 1.
 
         #newFS.update(self)
         return newFS
-
-    def update(self, inputStates = {}):
+        
+    def updateFSInputs(self, fs, inputStates):
+        """updates inputs of the given FS"""
+        self.net[fs].problemState = {k: self.net[k].oldActivity
+            for k in self.net[fs].problemWeights.iterkeys()}
+                #if not self.net[k].isLearning}
+        self.net[fs].goalState = {k: self.net[k].oldActivity
+            for k in self.net[fs].goalWeights.iterkeys()}
+                #if not self.net[k].isLearning}
+        self.net[fs].lateralState = {k: self.net[k].oldActivity
+            for k in self.net[fs].lateralWeights.iterkeys()}
+                #if self.net[k].isActive and not self.net[k].isLearning}
+        self.net[fs].controlState = {k: self.net[k].oldActivity
+            for k in self.net[fs].controlWeights.iterkeys()}
+                #if not self.net[k].isLearning}
+                        
+    def setPlasticWeights(self, fs, inputStates):
+        """calculates mismatch between (inputs of) problem weights and
+        current active inputs in the previous layer"""
+        for inFS in inputStates.keys():
+             if (self.net[inFS].isActive and 
+                inFS not in self.net[fs].problemWeights):
+                 self.net[fs].plasticWeights[inFS] = -1.
+                 print 'failed weight',inFS,'->',fs
+        
+        
+    def update(self, inputStates = {}) :
         """updates the network given values of activations for input elements"""
         self.activation = {} # dict with {fsID, activation}
         self.mismatch = {}
-
-        # activate elements (FSs) correspondent to inputs
+        # activate elements (FSs) corresponding to the inputs
         self.activateFS(inputStates)
         # update activations and predictions of hidden and effector FSs
 #        for cycle in range(3): # convergence loop
         for fs in (set(self.net.keys()) - set(inputStates.keys())):
            # updating FS inputs
-            self.net[fs].problemState = {k: self.net[k].oldActivity
-                for k in self.net[fs].problemWeights.iterkeys()
-                    if not self.net[k].isLearning}
-            self.net[fs].goalState = {k: self.net[k].oldActivity
-                for k in self.net[fs].goalWeights.iterkeys()
-                    if not self.net[k].isLearning}
-            self.net[fs].lateralState = {k: self.net[k].oldActivity
-                for k in self.net[fs].lateralWeights.iterkeys()
-                    if self.net[k].isActive and not self.net[k].isLearning}
-            self.net[fs].controlState = {k: self.net[k].oldActivity
-                for k in self.net[fs].controlWeights.iterkeys()
-                    if not self.net[k].isLearning}
-
+            self.updateFSInputs(fs,inputStates)
             self.activation[fs], self.mismatch[fs] = self.net[fs].update()
+            if self.net[fs].isActive and self.net[fs].onTime == 1:
+                self.setPlasticWeights(fs,inputStates)
         # update history of activity
         self.logActivity(inputStates)
 
@@ -357,12 +396,12 @@ class FSNetwork:
                     self.removeFS(fs)
 
 # TODO:        # create alternatives for the failed FSs
-        for i in range(len(self.failedFS)):
-            #if self.net[self.failedFS[i]].isActive:
-            print 'creating 2nd fs for failedFS:', self.failedFS[i]
-            newFS = self.createFS(self.net[self.failedFS[i]])
-            self.memoryTrace[newFS.ID] = newFS
-            print 'new fs ID:', newFS.ID
+#        for i in range(len(self.failedFS)):
+#            if self.net[self.failedFS[i]].isLearning:
+#            print 'creating 2nd fs for failedFS:', self.failedFS[i]
+#            newFS = self.createFS(self.net[self.failedFS[i]])
+#            self.memoryTrace[newFS.ID] = newFS
+#            print 'new fs ID:', newFS.ID
 
         # create alternatives for the matched FSs
         for i in range(len(self.matchedFS)):
@@ -430,10 +469,10 @@ class FSNetwork:
             self.activation[inFS] = fs_list[inFS]
 #            self.net[inFS].isActive = True # TODO: remove ???
             if (self.net[inFS].oldActivity >= self.net[inFS].threshold):
-                #self.net[inFS].isActive = True
+                self.net[inFS].isActive = True
                 self.net[inFS].onTime += 1
             else:
-                #self.net[inFS].isActive = False
+                self.net[inFS].isActive = False
                 self.net[inFS].onTime = 0
 
     def setOutFS(self, fs_list):
@@ -504,7 +543,7 @@ class FSNetwork:
         ar = plot.axes()
         actArrStyle=dict(arrowstyle='fancy',
                       shrinkA=20, shrinkB=20, aa=True,
-                      fc="red",ec="none", alpha=0.6, lw=0,
+                      fc="red",ec="none", alpha=0.85, lw=0,
                       connectionstyle="arc3,rad=-0.1",)
         inhibitionArrStyle=dict(arrowstyle='fancy',
                       shrinkA=20, shrinkB=20, aa=True,
@@ -512,19 +551,25 @@ class FSNetwork:
                       connectionstyle="arc3,rad=-0.13",)
         predArrStyle=dict(arrowstyle='fancy',
                       shrinkA=20, shrinkB=20, aa=True,
-                      fc="green",ec="none", alpha=0.6,
+                      fc="green",ec="none", alpha=0.7,
                       connectionstyle="arc3,rad=0.2",)
         for vertex in G.edges(keys=True,data=True): # drawing links
             #print vertex
-            if vertex[3]['weight'] > 0:
+            if vertex[3]['weight'] != 0:
                 coords = [node_layout[vertex[1]][0],
                           node_layout[vertex[1]][1],
                          node_layout[vertex[0]][0],
                          node_layout[vertex[0]][1]]
                 if (vertex[2] == 0) :
-                    actArrStyle['fc'] = plot.cm.Reds(vertex[3]['weight'])
-                    ar.annotate('',(coords[0], coords[1]),(coords[2], coords[3]),
-                                arrowprops = actArrStyle)
+                    if vertex[3]['weight'] > 0:
+                        actArrStyle['fc'] = plot.cm.YlOrRd(vertex[3]['weight'])
+                        ar.annotate('',(coords[0], coords[1]),(coords[2], coords[3]),
+                                    arrowprops = actArrStyle)
+                    else:
+                        actArrStyle['fc'] = plot.cm.Greys(abs(vertex[3]['weight']))
+                        print '&&& plot:', vertex
+                        ar.annotate('',(coords[0], coords[1]),(coords[2], coords[3]),
+                                    arrowprops = actArrStyle)
                 if (vertex[2] == 1) :
                     predArrStyle['fc'] = plot.cm.Greens(vertex[3]['weight'])
                     ar.annotate('',(coords[0], coords[1]),(coords[2], coords[3]),
@@ -534,7 +579,7 @@ class FSNetwork:
                     ar.annotate('',(coords[0], coords[1]),(coords[2], coords[3]),
                                 arrowprops = inhibitionArrStyle)
                 if (vertex[2] == 3) :
-                    actArrStyle['fc'] = plot.cm.Purples(vertex[3]['weight'])
+                    actArrStyle['fc'] = plot.cm.RdPu(vertex[3]['weight'])
                     ar.annotate('',(coords[0], coords[1]),(coords[2], coords[3]),
                                 arrowprops = actArrStyle)
 
