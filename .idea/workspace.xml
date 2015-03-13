@@ -2,26 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="11c74faa-8046-4c9b-b95c-aa291c9ff5fa" name="Default" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.spyderworkspace" afterPath="$PROJECT_DIR$/.spyderworkspace" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/AtomFS - копия.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/Burtsev.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/FSNpy - копия.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tags_good+wrong.txt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ManipulatorHack/DataViz/tags_good+wrong.txt" />
+      <change type="DELETED" beforePath="C:\Users\Burtsev\Desktop\prog\FSN\.spyderworkspace" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FSN.session.tar" afterPath="$PROJECT_DIR$/FSN.session.tar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
     </list>
     <list id="00d4b650-da73-4b35-8498-987fcab4a04a" name="Failed commit: Default" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;" />
     <list id="cc50658c-8354-45e3-97f1-4de47163b1b4" name="Failed commit: Default (2)" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ManipulatorHack/DataViz/.spyderproject" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ManipulatorHack/.spyderworkspace" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/AtomFS.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ManipulatorHack/DataViz/DataViz.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/VizFSN.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ManipulatorHack/DataViz/tags_good.txt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ManipulatorHack/DataViz/tags_wrong.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FSNpy.py" afterPath="$PROJECT_DIR$/FSNpy.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HyperCube_SingleGoal_test.py" afterPath="$PROJECT_DIR$/HyperCube_SingleGoal_test.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="FSN.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <file path="$PROJECT_DIR$/.idea/workspace.xml" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +43,7 @@
           <file leaf-file-name="FSNpy.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/FSNpy.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.5763547" vertical-offset="1443" max-vertical-offset="3419">
+                <state vertical-scroll-proportion="0.87969923" vertical-offset="1443" max-vertical-offset="3419">
                   <caret line="161" column="36" selection-start-line="161" selection-start-column="36" selection-end-line="161" selection-end-column="36" />
                   <folding>
                     <element signature="e#772#1142#0" expanded="false" />
@@ -104,8 +101,8 @@
           <file leaf-file-name="AtomFS.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/AtomFS.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.5036946" vertical-offset="410" max-vertical-offset="1261">
-                  <caret line="188" column="0" selection-start-line="188" selection-start-column="0" selection-end-line="188" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.5244361" vertical-offset="410" max-vertical-offset="1261">
+                  <caret line="178" column="49" selection-start-line="178" selection-start-column="49" selection-end-line="178" selection-end-column="49" />
                   <folding>
                     <element signature="e#159#197#0" expanded="false" />
                     <element signature="e#302#571#0" expanded="false" />
@@ -468,16 +465,23 @@
       <option name="number" value="Default" />
       <updated>1425548167696</updated>
     </task>
+    <task id="LOCAL-00001" summary="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;">
+      <created>1426260822025</created>
+      <option name="number" value="00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1426260822025</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1600" height="900" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282532" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282532" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3282532" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32881773" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282532" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -603,7 +607,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/FSNpy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5763547" vertical-offset="1443" max-vertical-offset="3419">
+        <state vertical-scroll-proportion="0.87969923" vertical-offset="1443" max-vertical-offset="3419">
           <caret line="161" column="36" selection-start-line="161" selection-start-column="36" selection-end-line="161" selection-end-column="36" />
           <folding>
             <element signature="e#772#1142#0" expanded="false" />
@@ -619,8 +623,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AtomFS.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5036946" vertical-offset="410" max-vertical-offset="1261">
-          <caret line="188" column="0" selection-start-line="188" selection-start-column="0" selection-end-line="188" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.5244361" vertical-offset="410" max-vertical-offset="1261">
+          <caret line="178" column="49" selection-start-line="178" selection-start-column="49" selection-end-line="178" selection-end-column="49" />
           <folding>
             <element signature="e#159#197#0" expanded="false" />
             <element signature="e#302#571#0" expanded="false" />
