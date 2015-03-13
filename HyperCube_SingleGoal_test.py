@@ -7,8 +7,10 @@ Created on Wed Sep 11 09:01:40 2013
 @author: Burtsev
 """
 import FSNpy as FSN
+import AtomFS as fs
 import matplotlib.pyplot as plt
 import scipy as np
+import VizFSN as viz
 # import operator
 
 """inputs for binary string associated with a hypercube nodes
@@ -92,7 +94,7 @@ stateTr = setTransitions(dim)
 FSNet = FSN.FSNetwork()
 # create initial FSs: inputs + effectors + interFS + goalFS
 for i in range(2 * dim + 2 * dim + 2 * dim + 1):
-    FSNet.add(FSN.AtomFS())
+    FSNet.add(fs.AtomFS())
 
 for i in range(dim):  # create links of the initial network
     # outputs "0->1"
@@ -188,7 +190,7 @@ for t in range(period):
     if len(FSNet.matchedFS) > 0 and drawFSNet:
         plt.figure(num=('t:' + str(t)))
         plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)
-        FSNet.drawNet()
+        viz.drawNet(FSNet.net)
 
 plt.figure()
 plt.subplot(3, 1, 1)
@@ -209,6 +211,6 @@ plt.title('number of FS')
 
 plt.figure()
 plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)
-FSNet.drawNet()
+viz.drawNet(FSNet.net)
 
 plt.show()

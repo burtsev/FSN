@@ -7,224 +7,8 @@ Created on Sun Sep 01 14:25:22 2013
 @author: Burtsev
 """
 
-import scipy as np
 from copy import deepcopy
 
-""" Some general functions."""
-
-
-def sigmoid(x, k, x0):  # sigmoid activation function
-    return 1 / (1 + np.exp(-k * (x - x0)))
-
-
-def weightedSum(inputs, weights):  # calculation of weighted sum, arguments are lists
-    if len(inputs) > 0:
-        return np.array([[inputs[i], weights[i]]
-                         for i in weights.iterkeys() if i in inputs]).prod(1).sum()
-    else:
-        return 0
-
-
-""" Main classes """
-
-
-class AtomFS:
-    """Class for the elementary functional system (FS).
-
-        This class implements basic FS functionality:
-        1) activation in the problem state;
-        2) deactivation in the goal state;
-        3) tracking time of transition from the problem to the goal
-    """
-    # FS attributes
-    # - metadata
-    ID = int  # FS id
-    parentID = int  # id of parent FS
-    # - structural parameters
-    problemWeights = {}  # weights for the problemState input
-    goalWeights = {}  # weights for the goal input
-    lateralWeights = {}  # weights for the lateral inhibition
-    controlWeights = {}  # weights for the top-down control
-    plasticWeights = {}  # temporary weights for predictive features of env.
-    # - dynamical parameters
-    tau = float  # expected time for transition from the problem to the goal state
-    threshold = float  # for the activation
-    noise = float  # random value to be added to the FS activation
-    k = float
-    x0 = float
-    pr_threshold = float  # for the prediction
-    pr_k = float
-    pr_x0 = float
-    rateOfWeightLearning = 0.1
-    # - state variables
-    problemState = {}  # input for the features of the problem to be solved by FS
-    goalState = {}  # input for the features of the required solution
-    lateralState = {}  # input for the lateral inhibition (activation)
-    controlState = {}  # input for the top-down control
-    activity = float  # current value of FS activity
-    wasActive = []  # history of FS activity
-    onTime = int  # the period of current FS's activity
-    mismatch = float  # current value of mismatch between goal and current state
-    # - flags
-    isActive = bool  # presence of FS activity
-    isLearning = bool  # learning state
-    failed = bool  # FS was unable to achieve goal state
-    isInput = bool  # is true if value is set externally
-    isOutput = bool  # is true if the value is not predicted
-    exactInputMatch = bool  # is true if the FS should be (de)activated only
-    # in the case when the input exactly matches the weights
-
-    def __init__(self):
-        """"Create and initialize FS."""
-        self.ID = 0
-        self.problemWeights = {}
-        self.goalWeights = {}
-        self.lateralWeights = {}
-        self.controlWeights = {}
-        self.plasticWeights = {}
-        self.tau = 6
-        self.threshold = 0.95
-        self.noise = 0.1
-        self.k = 10  # k and x0 are chosen to have output 0.5 for normalized weighted
-        self.x0 = 0.5  # input of 0.5 and high activation for input = 1
-        self.pr_threshold = self.threshold
-        self.pr_k = self.k
-        self.pr_x0 = self.x0
-        self.activity = 0.
-        self.oldActivity = 0.
-        self.wasActive = []
-        for i in range(2):  # depth of the activation memory is 2
-            self.wasActive.append(False)
-        self.onTime = 0
-        self.mismatch = 0.
-        self.isActive = False
-        self.isLearning = False
-        self.failed = False
-        self.isInput = False
-        self.isOutput = False
-        self.exactInputMatch = True
-
-    def set_params(self, pw, gw, t, th, n, cw={0: 0}):
-        """"set parameters of FS."""
-        self.problemWeights = pw
-        self.goalWeights = gw
-        self.controlWeights = cw
-        self.threshold = th
-        self.tau = t
-        self.noise = n
-
-    def calcProblemActivation(self):
-        """Returns a value of activation for the weighted problem input."""
-        # calculation of sum of weighted inputs (positive weights)
-        if self.exactInputMatch:
-            if len(self.problemWeights) > 0:
-                return int(np.array_equal(self.problemState, self.problemWeights))
-            return 0
-        wInSum = weightedSum(self.problemState, self.problemWeights)
-        if wInSum != 0:  # weighted sum is normalised
-            wInSum = wInSum / sum(w for w in self.problemWeights.itervalues())
-        return wInSum
-
-    def calcGoalMismatch(self):
-        """Returns a value of goal state mismatch."""
-        if len(self.goalState) == 0:
-            return 0
-        if self.exactInputMatch:
-            self.mismatch = float(np.array_equal(self.goalState, self.goalWeights))
-            return self.mismatch
-        self.mismatch = weightedSum(self.goalState, self.goalWeights)
-        if self.mismatch != 0:  # weighted sum is normalised
-            self.mismatch = self.mismatch / sum(w for w in self.goalWeights.itervalues())
-        return self.mismatch
-
-    def calcLateralActivation(self):
-        """Returns a value of activation for the weighted lateral input."""
-        if len(self.lateralState) == 0:
-            return 0
-        wInSum = weightedSum(self.lateralState, self.lateralWeights)
-        # if (wInSum != 0): # weighted sum is normalised
-        # wInSum = wInSum/sum(w for w in self.lateralWeights.itervalues())
-        return wInSum
-
-    def calcControlActivation(self):
-        """Returns a value of activation for the weighted control input."""
-        # calculation of sum of weighted inputs (positive weights)
-        if len(self.controlState) == 0:
-            return 0
-        wInSum = weightedSum(self.controlState, self.controlWeights)
-        return wInSum
-
-    def calcCore(self):
-        """Returns a value of current activation of the FS."""
-        if self.isActive and self.onTime >= self.tau:
-            self.failed = True
-            self.isActive = False
-            self.activity = 0
-            self.onTime = 0
-            if self.calcGoalMismatch() >= self.pr_threshold:
-                self.failed = False
-            else:
-                self.problemWeights.update(self.plasticWeights)
-                print '%#%# learned fs', self.ID
-                print ' wpr:', self.problemWeights
-                print ' pl w:', self.plasticWeights
-        else:
-            wInSum = self.oldActivity
-            wInSum += self.calcProblemActivation()
-            wInSum -= self.calcLateralActivation()
-            wInSum += self.calcControlActivation()
-            # noinspection PyArgumentList
-            wInSum += 2 * (0.5 - np.rand()) * self.noise
-            # if self.wasActive[-1] and not self.isOutput:
-            if not self.isOutput:
-                wInSum -= self.calcGoalMismatch()
-            self.activity = sigmoid(wInSum, self.k, self.x0)
-            if self.activity >= self.threshold:
-                self.isActive = True
-            else:
-                self.isActive = False
-            if self.mismatch >= self.pr_threshold:  # the goal state has been obtained
-                self.failed = False
-                self.plasticWeights = {}
-                # self.mismatch = 0
-                self.onTime = 0
-            if self.isActive and not self.isOutput:
-                self.onTime += 1
-        # TODO : незабыть, что когда будет введена возможность латерального
-        # возбуждения надо будет убрать знак минус перед взвешенной
-        # суммой при ее добавлении к аргументу.
-        return self.activity
-
-    def update(self):  # net is a dictionary {FSID: AtomFS}
-        """Updates current state of FS."""
-        self.wasActive.pop(0)
-        self.wasActive.append(self.isActive)
-        self.oldActivity = self.activity
-        self.calcCore()
-        return self.activity, self.mismatch
-
-    def resetActivity(self):
-        """Resets FS activity"""
-        self.failed = False
-        self.isActive = False
-        self.wasActive = []
-        for i in range(2):  # depth of the activation memory is 2
-            self.wasActive.append(False)
-        self.mismatch = 0
-        self.onTime = 0
-        self.activity = 0
-
-    def weightsUpdate(self, fsnet):
-        """Updates current weights of FS to exclude unimportant connections"""
-        for fs in self.problemWeights.keys():
-            if not fsnet[fs].isActive:
-                if self.problemWeights[fs] > self.rateOfWeightLearning:
-                    self.problemWeights[fs] -= self.rateOfWeightLearning
-                else:
-                    self.problemWeights[fs] = 0
-
-
-# end of AtomFS class
 
 class FSNetwork:
     """Implements a network of functional systems"""
@@ -271,7 +55,7 @@ class FSNetwork:
         return offspring
 
     def removeFS(self, ID):
-        """removes FS from the network with cleaning up all outgiong links"""
+        """removes FS from the network with cleaning up all outgoing links"""
         del self.net[ID]
         for fs in self.net.keys():
             if ID in self.net[fs].problemWeights.keys():
@@ -382,8 +166,8 @@ class FSNetwork:
             # updating FS inputs
             self.updateFSInputs(fs, inputStates)
             self.activation[fs], self.mismatch[fs] = self.net[fs].update()
-            if self.net[fs].isActive and self.net[fs].onTime == 1:
-                self.setPlasticWeights(fs, inputStates)
+            # if self.net[fs].isActive and self.net[fs].onTime == 1:
+            #     self.setPlasticWeights(fs, inputStates)
         # update history of activity
         self.logActivity(inputStates)
 
@@ -440,28 +224,6 @@ class FSNetwork:
                     #        self.memoryTrace = {}
         return self.activation
 
-    def addActionLinks(self, links):
-        """creates links between FSs. Input format [[start, end, weight]]"""
-        if not links:
-            links = []
-        for lnk in range(len(links)):
-            self.net[links[lnk][1]].problemWeights[links[lnk][0]] = links[lnk][2]
-
-    def addLateralLinks(self, links):
-        """creates  inhibition links between FSs. Input format [[start, end, weight]]"""
-        for lnk in range(len(links)):
-            self.net[links[lnk][1]].lateralWeights[links[lnk][0]] = links[lnk][2]
-
-    def addPredictionLinks(self, links):
-        """creates links between FSs. Input format [[start, end, weight]]"""
-        for lnk in range(len(links)):
-            self.net[links[lnk][1]].goalWeights[links[lnk][0]] = links[lnk][2]
-
-    def addControlLinks(self, links):
-        """creates links between FSs. Input format [[start, end, weight]]"""
-        for lnk in range(len(links)):
-            self.net[links[lnk][1]].controlWeights[links[lnk][0]] = links[lnk][2]
-
     def activateFS(self, fs_list):
         """sets activations for listed FSs"""
 
@@ -490,6 +252,36 @@ class FSNetwork:
         for outFS in range(len(fs_list)):
             self.net[fs_list[outFS]].isOutput = True
 
+    def resetActivity(self):
+        """resets activity for all FS in the net"""
+        for fs in self.net.keys():
+            self.net[fs].resetActivity()
+        self.failedFS = []  # list of FSs that failed at the current time
+        self.activatedFS = []  # a list of FSs that activated at the current time
+        self.matchedFS = []  # a list of FSs that were failed and now have prediction satisfied
+
+    def addActionLinks(self, links):
+        """creates links between FSs. Input format [[start, end, weight]]"""
+        if not links:
+            links = []
+        for lnk in range(len(links)):
+            self.net[links[lnk][1]].problemWeights[links[lnk][0]] = links[lnk][2]
+
+    def addLateralLinks(self, links):
+        """creates  inhibition links between FSs. Input format [[start, end, weight]]"""
+        for lnk in range(len(links)):
+            self.net[links[lnk][1]].lateralWeights[links[lnk][0]] = links[lnk][2]
+
+    def addPredictionLinks(self, links):
+        """creates links between FSs. Input format [[start, end, weight]]"""
+        for lnk in range(len(links)):
+            self.net[links[lnk][1]].goalWeights[links[lnk][0]] = links[lnk][2]
+
+    def addControlLinks(self, links):
+        """creates links between FSs. Input format [[start, end, weight]]"""
+        for lnk in range(len(links)):
+            self.net[links[lnk][1]].controlWeights[links[lnk][0]] = links[lnk][2]
+
     def logActivity(self, inputStates):
         self.activatedFS = []
         wasFailed = self.failedFS[:]
@@ -513,88 +305,3 @@ class FSNetwork:
         self.matchedFS = wasFailed[:]
 
     # end of logActivity
-
-    def resetActivity(self):
-        """resets activity for all FS in the net"""
-        for fs in self.net.keys():
-            self.net[fs].resetActivity()
-        self.failedFS = []  # list of FSs that failed at the current time
-        self.activatedFS = []  # a list of FSs that activated at the current time
-        self.matchedFS = []  # a list of FSs that were failed and now have prediction satisfied
-
-    def drawNet(self):
-        """draws the FS network"""
-        import networkx as nx
-        import matplotlib.pyplot as plot
-
-        G = nx.MultiDiGraph()
-        G.add_nodes_from(self.net.keys())
-        net_activity = []
-        for fs in self.net.keys():
-            net_activity.append(self.net[fs].activity)
-            for synapse in self.net[fs].lateralWeights.keys():
-                G.add_edge(synapse, fs, key=2,
-                           weight=abs(self.net[fs].lateralWeights[synapse]))
-            for synapse in self.net[fs].goalWeights.keys():
-                G.add_edge(synapse, fs, key=1,
-                           weight=self.net[fs].goalWeights[synapse])
-            for synapse in self.net[fs].problemWeights.keys():
-                G.add_edge(synapse, fs, key=0,
-                           weight=self.net[fs].problemWeights[synapse])
-            for synapse in self.net[fs].controlWeights.keys():
-                G.add_edge(synapse, fs, key=3,
-                           weight=abs(self.net[fs].controlWeights[synapse]))
-
-        node_layout = nx.circular_layout(G)  # nx.graphviz_layout(G,prog="neato")
-        plot.cla()
-        nx.draw_networkx_nodes(G, pos=node_layout, node_size=800,
-                               node_color=net_activity, cmap=plot.cm.Reds)
-        nx.draw_networkx_labels(G, pos=node_layout)
-        ar = plot.axes()
-        actArrStyle = dict(arrowstyle='fancy',
-                           shrinkA=20, shrinkB=20, aa=True,
-                           fc="red", ec="none", alpha=0.85, lw=0,
-                           connectionstyle="arc3,rad=-0.1", )
-        inhibitionArrStyle = dict(arrowstyle='fancy',
-                                  shrinkA=20, shrinkB=20, aa=True,
-                                  fc="blue", ec="none", alpha=0.6,
-                                  connectionstyle="arc3,rad=-0.13", )
-        predArrStyle = dict(arrowstyle='fancy',
-                            shrinkA=20, shrinkB=20, aa=True,
-                            fc="green", ec="none", alpha=0.7,
-                            connectionstyle="arc3,rad=0.2", )
-        for vertex in G.edges(keys=True, data=True):  # drawing links
-            # print vertex
-            if vertex[3]['weight'] != 0:
-                coords = [node_layout[vertex[1]][0],
-                          node_layout[vertex[1]][1],
-                          node_layout[vertex[0]][0],
-                          node_layout[vertex[0]][1]]
-                if vertex[2] == 0:
-                    if vertex[3]['weight'] > 0:
-                        actArrStyle['fc'] = plot.cm.YlOrRd(vertex[3]['weight'])
-                        ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
-                                    arrowprops=actArrStyle)
-                    else:
-                        actArrStyle['fc'] = plot.cm.Greys(abs(vertex[3]['weight']))
-                        print '&&& plot:', vertex
-                        ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
-                                    arrowprops=actArrStyle)
-                if vertex[2] == 1:
-                    predArrStyle['fc'] = plot.cm.Greens(vertex[3]['weight'])
-                    ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
-                                arrowprops=predArrStyle)
-                if vertex[2] == 2:
-                    inhibitionArrStyle['fc'] = plot.cm.Blues(vertex[3]['weight'])
-                    ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
-                                arrowprops=inhibitionArrStyle)
-                if vertex[2] == 3:
-                    actArrStyle['fc'] = plot.cm.RdPu(vertex[3]['weight'])
-                    ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
-                                arrowprops=actArrStyle)
-
-        ar.xaxis.set_visible(False)
-        ar.yaxis.set_visible(False)
-        plot.subplots_adjust(left=0.0, right=1., top=1., bottom=0.0)
-        plot.show()
-        # todo - handle self-links
