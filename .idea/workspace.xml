@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="11c74faa-8046-4c9b-b95c-aa291c9ff5fa" name="Default" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;" />
-    <list id="00d4b650-da73-4b35-8498-987fcab4a04a" name="Failed commit: Default" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;" />
-    <list id="cc50658c-8354-45e3-97f1-4de47163b1b4" name="Failed commit: Default (2)" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;">
+    <list default="true" id="11c74faa-8046-4c9b-b95c-aa291c9ff5fa" name="Default" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ManipulatorHack/StochasticTMazel_test.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AtomFS.py" afterPath="$PROJECT_DIR$/AtomFS.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FSNpy.py" afterPath="$PROJECT_DIR$/FSNpy.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HyperCube_SingleGoal_test.py" afterPath="$PROJECT_DIR$/HyperCube_SingleGoal_test.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
+    <list id="00d4b650-da73-4b35-8498-987fcab4a04a" name="Failed commit: Default" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;" />
+    <list id="cc50658c-8354-45e3-97f1-4de47163b1b4" name="Failed commit: Default (2)" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;" />
     <ignored path="FSN.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <file path="$PROJECT_DIR$/.idea/workspace.xml" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,22 +31,35 @@
     <favorites_list name="FSN" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.4875">
+    <splitter split-orientation="horizontal" split-proportion="0.5052083">
       <split-first>
         <leaf>
-          <file leaf-file-name="FSNpy.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="FSNpy.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/FSNpy.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.5763547" vertical-offset="1443" max-vertical-offset="3419">
-                  <caret line="161" column="36" selection-start-line="161" selection-start-column="36" selection-end-line="161" selection-end-column="36" />
+                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3796">
+                  <caret line="14" column="31" selection-start-line="14" selection-start-column="31" selection-end-line="14" selection-end-column="31" />
                   <folding>
-                    <element signature="e#772#1142#0" expanded="false" />
-                    <element signature="e#11939#12172#0" expanded="false" />
-                    <element signature="e#12220#12420#0" expanded="false" />
-                    <element signature="e#12471#12656#0" expanded="false" />
-                    <element signature="e#12704#12892#0" expanded="false" />
-                    <element signature="e#12942#13924#0" expanded="false" />
-                    <marker date="1426258465372" expanded="false" signature="273:738" placeholder="..." />
+                    <element signature="e#175#200#0" expanded="true" />
+                    <element signature="e#2255#2676#0" expanded="false" />
+                    <element signature="e#2255#2507#1" expanded="false" />
+                    <marker date="1427720385398" expanded="true" signature="298:958" placeholder="..." />
+                    <marker date="1427720385398" expanded="true" signature="8988:8996" placeholder="..." />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="StochasticTMazel_test.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/ManipulatorHack/StochasticTMazel_test.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.35202086" vertical-offset="29" max-vertical-offset="2015">
+                  <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+                  <folding>
+                    <element signature="e#24#185#1" expanded="false" />
+                    <element signature="e#186#199#0" expanded="true" />
+                    <element signature="e#331#676#1" expanded="false" />
+                    <element signature="e#1708#2384#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -65,7 +81,7 @@
             <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/DataViz.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="767">
-                  <caret line="41" column="10" selection-start-line="41" selection-start-column="10" selection-end-line="41" selection-end-column="10" />
+                  <caret line="36" column="14" selection-start-line="36" selection-start-column="14" selection-end-line="36" selection-end-column="14" />
                   <folding>
                     <element signature="e#87#97#0" expanded="true" />
                   </folding>
@@ -77,36 +93,28 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="HyperCube_SingleGoal_test.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/HyperCube_SingleGoal_test.py">
+          <file leaf-file-name="FSNpy.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/FSNpy.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2873">
-                  <caret line="98" column="31" selection-start-line="98" selection-start-column="31" selection-end-line="98" selection-end-column="31" />
+                <state vertical-scroll-proportion="0.3350717" vertical-offset="1680" max-vertical-offset="3614">
+                  <caret line="155" column="43" selection-start-line="155" selection-start-column="43" selection-end-line="155" selection-end-column="43" />
                   <folding>
-                    <element signature="e#180#199#0" expanded="true" />
+                    <element signature="e#24#173#1" expanded="false" />
+                    <element signature="e#175#200#0" expanded="true" />
+                    <element signature="e#10831#11811#0" expanded="false" />
+                    <marker date="1427720385398" expanded="true" signature="298:958" placeholder="..." />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="AtomFS.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/AtomFS.py">
+          <file leaf-file-name="HyperCube_SingleGoal_test.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/HyperCube_SingleGoal_test.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.34359607" vertical-offset="410" max-vertical-offset="1261">
-                  <caret line="178" column="49" selection-start-line="178" selection-start-column="49" selection-end-line="178" selection-end-column="49" />
+                <state vertical-scroll-proportion="0.0" vertical-offset="429" max-vertical-offset="2873">
+                  <caret line="64" column="19" selection-start-line="64" selection-start-column="19" selection-end-line="64" selection-end-column="19" />
                   <folding>
-                    <element signature="e#159#197#0" expanded="false" />
-                    <element signature="e#302#571#0" expanded="false" />
-                    <element signature="e#592#861#1" expanded="false" />
-                    <element signature="e#2731#3708#0" expanded="false" />
-                    <element signature="e#3766#3962#0" expanded="false" />
-                    <element signature="e#4009#4405#0" expanded="false" />
-                    <element signature="e#4447#4814#0" expanded="false" />
-                    <element signature="e#4861#5058#0" expanded="false" />
-                    <element signature="e#5105#5302#0" expanded="false" />
-                    <element signature="e#7858#8119#0" expanded="false" />
-                    <marker date="1426259892487" expanded="false" signature="882:2697" placeholder="..." />
-                    <marker date="1426259892487" expanded="false" signature="5828:6201" placeholder="..." />
+                    <element signature="e#180#199#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -115,7 +123,7 @@
           <file leaf-file-name="tags_good.txt" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/tags_good.txt">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="14.04" vertical-offset="468" max-vertical-offset="1165294">
+                <state vertical-scroll-proportion="0.0" vertical-offset="117" max-vertical-offset="1165294">
                   <caret line="9" column="48" selection-start-line="9" selection-start-column="48" selection-end-line="9" selection-end-column="48" />
                   <folding />
                 </state>
@@ -125,9 +133,22 @@
           <file leaf-file-name="tags_wrong.txt" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/tags_wrong.txt">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-14.56" vertical-offset="0" max-vertical-offset="1306630">
+                <state vertical-scroll-proportion="0.0" vertical-offset="364" max-vertical-offset="1306630">
                   <caret line="28" column="30" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="30" />
                   <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="AtomFS.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/AtomFS.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0" vertical-offset="16" max-vertical-offset="3159">
+                  <caret line="30" column="16" selection-start-line="30" selection-start-column="16" selection-end-line="30" selection-end-column="16" />
+                  <folding>
+                    <element signature="e#915#1184#1" expanded="false" />
+                    <element signature="e#5327#5524#0" expanded="false" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -146,14 +167,17 @@
         <option value="$PROJECT_DIR$/VizFSN.py" />
         <option value="$PROJECT_DIR$/HyperCube_SingleGoal_test.py" />
         <option value="$PROJECT_DIR$/ManipulatorHack/DataViz/DataViz.py" />
-        <option value="$PROJECT_DIR$/FSNpy.py" />
         <option value="$PROJECT_DIR$/AtomFS.py" />
+        <option value="$PROJECT_DIR$/FSNpy.py" />
+        <option value="$PROJECT_DIR$/ManipulatorHack/StochasticTMazel_test.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="width" value="1600" />
-    <option name="height" value="900" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1612" />
+    <option name="height" value="912" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -188,7 +212,7 @@
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
+    <navigator proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -199,33 +223,11 @@
       <autoscrollFromSource />
       <sortByType />
     </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FSN" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FSN" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FSN" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$USER_HOME$/AppData/Local/GitHub/PortableGit_c2ba306e536fdf878271f7fe636a147ff37326ad/bin/git.exe" />
-    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors.Language Defaults" />
+    <property name="options.lastSelected" value="vcs.Git" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="recentsLimit" value="5" />
@@ -252,7 +254,12 @@
       <console-settings />
     </option>
   </component>
-  <component name="RunManager" selected="Python.HyperCube_SingleGoal_test">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Burtsev\Desktop\prog\FSN\ManipulatorHack" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.StochasticTMazel_test">
     <configuration default="false" name="HyperCube_SingleGoal_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -304,6 +311,25 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="FSN" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ManipulatorHack/DataViz/DataViz.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="StochasticTMazel_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ManipulatorHack" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="FSN" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ManipulatorHack/StochasticTMazel_test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <RunnerSettings RunnerId="PythonRunner" />
@@ -432,16 +458,18 @@
       <option name="USE_PARAM" value="false" />
       <method />
     </configuration>
-    <list size="3">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="Python.HyperCube_SingleGoal_test" />
       <item index="1" class="java.lang.String" itemvalue="Python.FSNpy" />
       <item index="2" class="java.lang.String" itemvalue="Python.DataViz" />
+      <item index="3" class="java.lang.String" itemvalue="Python.StochasticTMazel_test" />
     </list>
     <recent_temporary>
-      <list size="3">
-        <item index="0" class="java.lang.String" itemvalue="Python.HyperCube_SingleGoal_test" />
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="Python.StochasticTMazel_test" />
         <item index="1" class="java.lang.String" itemvalue="Python.DataViz" />
-        <item index="2" class="java.lang.String" itemvalue="Python.FSNpy" />
+        <item index="2" class="java.lang.String" itemvalue="Python.HyperCube_SingleGoal_test" />
+        <item index="3" class="java.lang.String" itemvalue="Python.FSNpy" />
       </list>
     </recent_temporary>
   </component>
@@ -452,7 +480,6 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="11c74faa-8046-4c9b-b95c-aa291c9ff5fa" name="Default" comment="" />
-      <changelist id="" name="New changelist" comment="" />
       <created>1425548167696</created>
       <option name="number" value="Default" />
       <updated>1425548167696</updated>
@@ -479,27 +506,27 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1600" height="900" extended-state="6" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1612" height="912" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19280206" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282532" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282532" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32881773" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282532" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282532" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32881773" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19280206" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="true" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28070176" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.168125" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32881773" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282532" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
@@ -525,23 +552,163 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="4" />
+      <option name="time" value="6" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/FSNpy.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1716" max-vertical-offset="4173">
+          <caret line="136" column="0" selection-start-line="136" selection-start-column="0" selection-end-line="136" selection-end-column="0" />
+          <folding>
+            <element signature="e#175#200#0" expanded="true" />
+            <element signature="e#2255#2676#0" expanded="false" />
+            <element signature="e#2255#2507#1" expanded="false" />
+            <marker date="1427720385398" expanded="true" signature="298:958" placeholder="..." />
+            <marker date="1427720385398" expanded="true" signature="8988:8996" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VizFSN.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="7" max-vertical-offset="1105">
+          <caret line="32" column="20" selection-start-line="32" selection-start-column="20" selection-end-line="32" selection-end-column="20" />
+          <folding>
+            <element signature="e#24#45#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/DataViz.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="195" max-vertical-offset="767">
+          <caret line="15" column="9" selection-start-line="15" selection-start-column="9" selection-end-line="15" selection-end-column="9" />
+          <folding>
+            <element signature="e#87#97#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HyperCube_SingleGoal_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="133" max-vertical-offset="2873">
+          <caret line="31" column="4" selection-start-line="31" selection-start-column="4" selection-end-line="31" selection-end-column="4" />
+          <folding>
+            <element signature="e#180#199#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AtomFS.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1534">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#915#1184#1" expanded="false" />
+            <element signature="e#5327#5524#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/tags_good.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="117" max-vertical-offset="1165294">
+          <caret line="9" column="48" selection-start-line="9" selection-start-column="48" selection-end-line="9" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/tags_wrong.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="364" max-vertical-offset="1306630">
+          <caret line="28" column="30" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FSNpy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1716" max-vertical-offset="4173">
+          <caret line="136" column="0" selection-start-line="136" selection-start-column="0" selection-end-line="136" selection-end-column="0" />
+          <folding>
+            <element signature="e#175#200#0" expanded="true" />
+            <element signature="e#2255#2676#0" expanded="false" />
+            <element signature="e#2255#2507#1" expanded="false" />
+            <marker date="1427720385398" expanded="true" signature="298:958" placeholder="..." />
+            <marker date="1427720385398" expanded="true" signature="8988:8996" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VizFSN.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="7" max-vertical-offset="1105">
+          <caret line="32" column="20" selection-start-line="32" selection-start-column="20" selection-end-line="32" selection-end-column="20" />
+          <folding>
+            <element signature="e#24#45#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/DataViz.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="195" max-vertical-offset="767">
+          <caret line="15" column="9" selection-start-line="15" selection-start-column="9" selection-end-line="15" selection-end-column="9" />
+          <folding>
+            <element signature="e#87#97#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HyperCube_SingleGoal_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="133" max-vertical-offset="2873">
+          <caret line="31" column="4" selection-start-line="31" selection-start-column="4" selection-end-line="31" selection-end-column="4" />
+          <folding>
+            <element signature="e#180#199#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AtomFS.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1534">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#915#1184#1" expanded="false" />
+            <element signature="e#5327#5524#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/tags_good.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="117" max-vertical-offset="1165294">
+          <caret line="9" column="48" selection-start-line="9" selection-start-column="48" selection-end-line="9" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/tags_wrong.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="364" max-vertical-offset="1306630">
+          <caret line="28" column="30" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FSNpy.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="91" max-vertical-offset="7761">
           <caret line="7" column="3" selection-start-line="7" selection-start-column="3" selection-end-line="7" selection-end-column="3" />
           <folding>
-            <element signature="e#772#1142#0" expanded="false" />
-            <element signature="e#11939#12172#0" expanded="false" />
-            <element signature="e#12220#12420#0" expanded="false" />
-            <element signature="e#12471#12656#0" expanded="false" />
-            <element signature="e#12704#12892#0" expanded="false" />
-            <element signature="e#12942#13924#0" expanded="false" />
-            <marker date="1426258465372" expanded="false" signature="273:738" placeholder="..." />
+            <element signature="e#175#200#0" expanded="true" />
+            <element signature="e#2255#2676#0" expanded="false" />
+            <element signature="e#2255#2507#1" expanded="false" />
+            <marker date="1427720385398" expanded="true" signature="298:958" placeholder="..." />
+            <marker date="1427720385398" expanded="true" signature="8988:8996" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -558,7 +725,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/tags_wrong.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-14.56" vertical-offset="0" max-vertical-offset="1306630">
+        <state vertical-scroll-proportion="0.0" vertical-offset="364" max-vertical-offset="1306630">
           <caret line="28" column="30" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="30" />
           <folding />
         </state>
@@ -566,19 +733,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/tags_good.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="14.04" vertical-offset="468" max-vertical-offset="1165294">
+        <state vertical-scroll-proportion="0.0" vertical-offset="117" max-vertical-offset="1165294">
           <caret line="9" column="48" selection-start-line="9" selection-start-column="48" selection-end-line="9" selection-end-column="48" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/DataViz.py">
+    <entry file="file://$USER_HOME$/.PyCharm40/system/python_stubs/-762174762/numpy/random/mtrand.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="767">
-          <caret line="41" column="10" selection-start-line="41" selection-start-column="10" selection-end-line="41" selection-end-column="10" />
-          <folding>
-            <element signature="e#87#97#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.33251232" vertical-offset="23650" max-vertical-offset="78767">
+          <caret line="1842" column="4" selection-start-line="1842" selection-start-column="4" selection-end-line="1842" selection-end-column="4" />
         </state>
       </provider>
     </entry>
@@ -592,57 +756,68 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ManipulatorHack/DataViz/DataViz.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="767">
+          <caret line="36" column="14" selection-start-line="36" selection-start-column="14" selection-end-line="36" selection-end-column="14" />
+          <folding>
+            <element signature="e#87#97#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FSNpy - копия.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4056">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/HyperCube_SingleGoal_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2873">
-          <caret line="98" column="31" selection-start-line="98" selection-start-column="31" selection-end-line="98" selection-end-column="31" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="429" max-vertical-offset="2873">
+          <caret line="64" column="19" selection-start-line="64" selection-start-column="19" selection-end-line="64" selection-end-column="19" />
           <folding>
             <element signature="e#180#199#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharm40/system/python_stubs/-762174762/numpy/random/mtrand.py">
+    <entry file="file://$PROJECT_DIR$/AtomFS.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33251232" vertical-offset="23650" max-vertical-offset="78767">
-          <caret line="1842" column="4" selection-start-line="1842" selection-start-column="4" selection-end-line="1842" selection-end-column="4" />
-          <folding />
+        <state vertical-scroll-proportion="0.0" vertical-offset="16" max-vertical-offset="3159">
+          <caret line="30" column="16" selection-start-line="30" selection-start-column="16" selection-end-line="30" selection-end-column="16" />
+          <folding>
+            <element signature="e#915#1184#1" expanded="false" />
+            <element signature="e#5327#5524#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/FSNpy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5763547" vertical-offset="1443" max-vertical-offset="3419">
-          <caret line="161" column="36" selection-start-line="161" selection-start-column="36" selection-end-line="161" selection-end-column="36" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3796">
+          <caret line="14" column="31" selection-start-line="14" selection-start-column="31" selection-end-line="14" selection-end-column="31" />
           <folding>
-            <element signature="e#772#1142#0" expanded="false" />
-            <element signature="e#11939#12172#0" expanded="false" />
-            <element signature="e#12220#12420#0" expanded="false" />
-            <element signature="e#12471#12656#0" expanded="false" />
-            <element signature="e#12704#12892#0" expanded="false" />
-            <element signature="e#12942#13924#0" expanded="false" />
-            <marker date="1426258465372" expanded="false" signature="273:738" placeholder="..." />
+            <element signature="e#175#200#0" expanded="true" />
+            <element signature="e#2255#2676#0" expanded="false" />
+            <element signature="e#2255#2507#1" expanded="false" />
+            <marker date="1427720385398" expanded="true" signature="298:958" placeholder="..." />
+            <marker date="1427720385398" expanded="true" signature="8988:8996" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AtomFS.py">
+    <entry file="file://$PROJECT_DIR$/ManipulatorHack/StochasticTMazel_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34359607" vertical-offset="410" max-vertical-offset="1261">
-          <caret line="178" column="49" selection-start-line="178" selection-start-column="49" selection-end-line="178" selection-end-column="49" />
+        <state vertical-scroll-proportion="0.35202086" vertical-offset="29" max-vertical-offset="2015">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
           <folding>
-            <element signature="e#159#197#0" expanded="false" />
-            <element signature="e#302#571#0" expanded="false" />
-            <element signature="e#592#861#1" expanded="false" />
-            <element signature="e#2731#3708#0" expanded="false" />
-            <element signature="e#3766#3962#0" expanded="false" />
-            <element signature="e#4009#4405#0" expanded="false" />
-            <element signature="e#4447#4814#0" expanded="false" />
-            <element signature="e#4861#5058#0" expanded="false" />
-            <element signature="e#5105#5302#0" expanded="false" />
-            <element signature="e#7858#8119#0" expanded="false" />
-            <marker date="1426259892487" expanded="false" signature="882:2697" placeholder="..." />
-            <marker date="1426259892487" expanded="false" signature="5828:6201" placeholder="..." />
+            <element signature="e#24#185#1" expanded="false" />
+            <element signature="e#186#199#0" expanded="true" />
+            <element signature="e#331#676#1" expanded="false" />
+            <element signature="e#1708#2384#0" expanded="false" />
           </folding>
         </state>
       </provider>

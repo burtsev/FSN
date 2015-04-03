@@ -21,6 +21,15 @@ def weightedSum(inputs, weights, norm=False):  # calculation of weighted sum, ar
         return 0
 
 
+def rbf(inputs, centroids, weights):
+    if len(inputs) > 0:
+        icw = np.array([[inputs[i], centroids[i], weights[i]]
+                        for i in centroids.keys()])
+        sw = np.absolute(np.subtract(icw[:, 0], icw[:, 1]))
+        return np.exp(-10*np.multiply(sw, icw[:, 2]).sum())
+    else:
+        return 0
+
 class AtomFS:
     """Class for the elementary functional system (FS).
 
@@ -35,7 +44,9 @@ class AtomFS:
     parentID = int  # id of parent FS
     # - structural parameters
     problemWeights = {}  # weights for the problemState input
+    problemValues = {}  # centroids for the problemState input
     goalWeights = {}  # weights for the goal input
+    goalValues = {}
     lateralWeights = {}  # weights for the lateral inhibition
     controlWeights = {}  # weights for the top-down control
     plasticWeights = {}  # temporary weights for predictive features of env.
@@ -72,7 +83,9 @@ class AtomFS:
         """"Create and initialize FS."""
         self.ID = 0
         self.problemWeights = {}
+        self.problemValues = {}
         self.goalWeights = {}
+        self.goalValues = {}
         self.lateralWeights = {}
         self.controlWeights = {}
         self.plasticWeights = {}
@@ -116,7 +129,7 @@ class AtomFS:
                 return int(np.array_equal(self.problemState, self.problemWeights))
             return 0
 
-        return weightedSum(self.problemState, self.problemWeights, norm=True)
+        return rbf(self.problemState, self.problemValues, self.problemWeights)
 
     def calcGoalMismatch(self):
         """Returns a value of goal state mismatch."""
@@ -128,7 +141,7 @@ class AtomFS:
             self.mismatch = float(np.array_equal(self.goalState, self.goalWeights))
             return self.mismatch
 
-        self.mismatch = weightedSum(self.goalState, self.goalWeights, norm=True)
+        self.mismatch = rbf(self.goalState, self.goalValues, self.goalWeights)
 
         return self.mismatch
 
@@ -152,7 +165,7 @@ class AtomFS:
         """Returns a value of current activation of the FS."""
 
         if self.isActive:
-                self.onTime = time - self.startTime
+            self.onTime = time - self.startTime
 
         if self.isActive and self.onTime >= self.tau:  # expected time of activation is over
             self.failed = True
@@ -161,13 +174,13 @@ class AtomFS:
             self.onTime = 0
             if self.calcGoalMismatch() >= self.pr_threshold:  # the goal has been obtained
                 self.failed = False
-            # else:
-            #     # if the goal hasn't been obtained then
-            #     # correct problem weights to make FS activation more specific
-            #     self.problemWeights.update(self.plasticWeights)
-            #     print '%#%# learned fs', self.ID
-            #     print ' wpr:', self.problemWeights
-            #     print ' pl w:', self.plasticWeights
+                # else:
+                # # if the goal hasn't been obtained then
+                #     # correct problem weights to make FS activation more specific
+                #     self.problemWeights.update(self.plasticWeights)
+                #     print '%#%# learned fs', self.ID
+                #     print ' wpr:', self.problemWeights
+                #     print ' pl w:', self.plasticWeights
         else:
             wInSum = self.oldActivity
             wInSum += self.calcProblemActivation()
@@ -190,7 +203,7 @@ class AtomFS:
             if self.mismatch >= self.pr_threshold:  # the goal has been obtained
                 self.failed = False
                 self.onTime = 0
-                #  self.plasticWeights = {}
+                # self.plasticWeights = {}
                 #  self.mismatch = 0
 
         return self.activity, self.mismatch
@@ -214,6 +227,16 @@ class AtomFS:
                 else:
                     self.problemWeights[fs] = 0
 
+    def setFSActivation(self, outValue):
+
+        self.wasActive.pop(0)
+        self.wasActive.append(self.isActive)
+        self.oldActivity = outValue
+        self.activity = outValue
+        self.isActive = True
+
+        return self.activity
+
     def resetActivity(self):
         """Resets FS activity"""
 
@@ -224,4 +247,4 @@ class AtomFS:
         self.onTime = 0
         self.activity = 0
 
-# end of AtomFS class
+        # end of AtomFS class

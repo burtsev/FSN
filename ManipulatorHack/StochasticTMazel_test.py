@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Learning a route from 000...000 to 111...111 on a hypercube with
+"""Learning a route from 000...000 to 111...111 in stochastic T-maze with
 a Functional Systems Network
 
-Created on Wed Sep 11 09:01:40 2013
+Created on Fri Mar 27 11:01:40 2013
 
 @author: Burtsev
 """
+import random
 import FSNpy as FSN
 import AtomFS as fs
 import matplotlib.pyplot as plt
@@ -24,12 +25,20 @@ import VizFSN as viz
 """
 
 
+def probSel(weights):
+    rnd = random.random() * sum(weights)
+    for i, w in enumerate(weights):
+        rnd -= w
+        if rnd < 0:
+            return i
+
+
 def st2Ind(st):
     """Converts list of bits to the decimal index"""
     return int(''.join(map(str, st)), 2)
 
 
-def inputMap(state=[]):
+def inputMap(state):
     """converts binary description of the current state into activations
        of the input layer"""
     inputs = []
@@ -38,45 +47,30 @@ def inputMap(state=[]):
             inputs.append(1)
         else:
             inputs.append(0)
-    for bit in range(len(state)):
-        if state[bit] == 1:
-            inputs.append(1)
-        else:
-            inputs.append(0)
-    return dict(zip(range(2 * dim), inputs))
+
+    return inputs  # dict(zip(range(dim), inputs))
 
 
-def outputMap(state, outFSActivity, trans):  # TODO
+def outputMap(state, outFS, trans):  # TODO
     """calculates change of the environmental state caused by activities of FSs """
 
-    winFS = []
-    # for fs in FSNet.net.keys():
-    # if FSNet.net[fs].isActive and (fs in range(2*dim,4*dim)):
-    #            winFS.append(fs)
-    for out in range(len(outFSActivity)):
-        if FSNet.net[outFSActivity[out][1]].isActive:
-            winFS.append(outFSActivity[out][1])
-            #outFSActivity[out] = (0,outFSActivity[out][1])
-    # the state is changed if there is at least one active action
-    if (len(winFS) > 0):
-        newState = state[:]
-        #        if (max(outFSActivity)[0]>0):
-        wFS = winFS[int(np.rand() * len(winFS))]
-        newState[wFS % dim] = int(wFS / dim) - 2
-        if trans[st2Ind(state)][st2Ind(newState)]:
-            state = newState[:]
-        print 'act:', wFS, ' ->', state
+    winFS = probSel([out.activity for out in outFS.values()])
+    newState = state[:]
+    newState[winFS % dim] = int(winFS / dim) - 2
+    if trans[st2Ind(state)][st2Ind(newState)]:
+        state = newState[:]
+    print 'act:', winFS, ' ->', state
     return state
 
 
-def setTransitions(dim):
+def setTransitions(dimension):
     """ setting transitions in the state space """
-    space_size = np.power(2, dim)
+    space_size = np.power(2, dimension)
     transition = np.ndarray(shape=(space_size, space_size), dtype=bool)
     transition.fill(False)
-    state1 = [0 for i in range(dim)]
+    state1 = [0 for i in range(dimension)]
     state2 = state1[:]
-    for i in range(dim):
+    for i in range(dimension):
         state2[i] = 1
         transition[st2Ind(state1)][st2Ind(state2)] = True  # forward transition
         transition[st2Ind(state2)][st2Ind(state1)] = True  # backward transition
@@ -89,48 +83,18 @@ def setTransitions(dim):
 
 
 dim = 2  # a dimension of a hypercube
-drawFSNet = True  # draw FSNet for every FS addition
+drawFSNet = False  # draw FSNet for every FS addition
 stateTr = setTransitions(dim)
-FSNet = FSN.FSNetwork()
-# create initial FSs: inputs + effectors + interFS + goalFS
-for i in range(2 * dim + 2 * dim + 2 * dim + 1):
-    FSNet.add(fs.AtomFS())
-
-for i in range(dim):  # create links of the initial network
-    # outputs "0->1"
-    FSNet.addControlLinks([[i + 5 * dim, i + 3 * dim, 2.]])
-    # outputs "1->0"
-    FSNet.addControlLinks([[i + 4 * dim, i + 2 * dim, 2.]])
-    # intermediate layer "0->1"
-    FSNet.addActionLinks([[i, i + 5 * dim, 1.]])
-    # FSNet.addActionLinks([[6*dim, i+5*dim, 1.]])
-    FSNet.addPredictionLinks([[i + dim, i + 5 * dim, 1.]])
-    # intermediate layer "1->0"
-    FSNet.addActionLinks([[i + dim, i + 4 * dim, 1.]])
-    # FSNet.addActionLinks([[6*dim, i+4*dim, 1.]])
-    FSNet.addPredictionLinks([[i, i + 4 * dim, 1.]])
-    # goal FS     1
-    FSNet.addActionLinks([[i, 6 * dim, 1.]])
-    FSNet.addPredictionLinks([[i + dim, 6 * dim, 1.]])
-
-    # lateral inhibition
-    cInh = 1.5 * dim
-    for j in range(4 * dim, 6 * dim):
-        if j != (i + 4 * dim):
-            FSNet.addLateralLinks([[i + 4 * dim, j, (cInh * 1. / (1 * dim))]])
-        if j != (i + 5 * dim):
-            FSNet.addLateralLinks([[i + 5 * dim, j, (cInh * 1. / (1 * dim))]])
-        if j != (i + 4 * dim):
-            FSNet.addLateralLinks([[i + 2 * dim, (j - 2 * dim), (cInh * 1. / (1 * dim))]])
-        if j != (i + 5 * dim):
-            FSNet.addLateralLinks([[i + 3 * dim, (j - 2 * dim), (cInh * 1. / (1 * dim))]])
-
-FSNet.setOutFS([i for i in range(2 * dim, 4 * dim)])
-
 start = [0 for i in range(dim)]  # start state
 goal = [1 for i in range(dim)]  # goal state
+
+FSNet = FSN.FSNetwork()
+FSNet.initCtrlNet(dim, 2*dim, 1)
+FSNet.addActionLinks([[l, FSNet.goalFS.keys()[0], start[l]] for l in range(dim)])
+FSNet.addPredictionLinks([[l, FSNet.goalFS.keys()[0], goal[l]] for l in range(dim)])
+
 # -------------------------
-convergenceLoops = 5  # a number of FS network updates per world's state update
+convergenceLoops = 1  # a number of FS network updates per world's state update
 period = 50  # a period of simulation
 # ------------------------
 # FSNet.drawNet()
@@ -143,12 +107,12 @@ NFSDyn = []
 
 # FSNet.activateFS(dict(zip(range(2*dim),inputMap(currState))))
 for t in range(period):
-    output = FSNet.update(t, inputMap(currState))
+
+    FSNet.update(t, inputMap(currState))
     oldState = currState[:]
     if (t % convergenceLoops) == 0:
-        currState = outputMap(currState,
-                              [(output[x], x) for x in range(2 * dim, 4 * dim)],
-                              stateTr)
+        currState = outputMap(currState, FSNet.outFS, stateTr)
+
     print 't', t
     print 'goals:', goalsReached
     print 'activations:', {k: round(v, 2) for k, v in FSNet.activation.iteritems()}
