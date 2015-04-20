@@ -26,9 +26,10 @@ def rbf(inputs, centroids, weights):
         icw = np.array([[inputs[i], centroids[i], weights[i]]
                         for i in centroids.keys()])
         sw = np.absolute(np.subtract(icw[:, 0], icw[:, 1]))
-        return np.exp(-10*np.multiply(sw, icw[:, 2]).sum())
+        return np.exp(-10 * np.multiply(sw, icw[:, 2]).sum())  # /len(inputs))
     else:
         return 0
+
 
 class AtomFS:
     """Class for the elementary functional system (FS).
@@ -90,8 +91,8 @@ class AtomFS:
         self.controlWeights = {}
         self.plasticWeights = {}
         self.tau = 1
-        self.threshold = 0.95
-        self.noise = 0.1
+        self.threshold = 0.6
+        self.noise = 0.001
         self.k = 10  # k and x0 are chosen to have output 0.5 for normalized weighted
         self.x0 = 0.5  # input of 0.5 and high activation for input = 1
         self.pr_threshold = self.threshold
@@ -103,6 +104,7 @@ class AtomFS:
         for i in range(2):  # depth of the activation memory is 2
             self.wasActive.append(False)
         self.onTime = 0.
+        self.startTime = 0.
         self.mismatch = 0.
         self.isActive = False
         self.isLearning = False
@@ -176,16 +178,16 @@ class AtomFS:
                 self.failed = False
                 # else:
                 # # if the goal hasn't been obtained then
-                #     # correct problem weights to make FS activation more specific
+                # # correct problem weights to make FS activation more specific
                 #     self.problemWeights.update(self.plasticWeights)
                 #     print '%#%# learned fs', self.ID
                 #     print ' wpr:', self.problemWeights
                 #     print ' pl w:', self.plasticWeights
         else:
-            wInSum = self.oldActivity
-            wInSum += self.calcProblemActivation()
+            wInSum = 0.3*self.oldActivity
+            wInSum += 0.8*self.calcProblemActivation()
             wInSum += self.calcLateralActivation()
-            wInSum += self.calcControlActivation()
+            wInSum += 0.5*self.calcControlActivation()
             wInSum += (1 - 2 * np.rand()) * self.noise
 
             if not self.isOutput:
@@ -204,7 +206,7 @@ class AtomFS:
                 self.failed = False
                 self.onTime = 0
                 # self.plasticWeights = {}
-                #  self.mismatch = 0
+                # self.mismatch = 0
 
         return self.activity, self.mismatch
 
@@ -246,5 +248,6 @@ class AtomFS:
         self.mismatch = 0
         self.onTime = 0
         self.activity = 0
+        self.oldActivity = 0
 
         # end of AtomFS class

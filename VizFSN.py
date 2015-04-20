@@ -17,10 +17,10 @@ def drawNet(net):
                        weight=abs(net[fs].lateralWeights[synapse]))
         for synapse in net[fs].goalWeights.keys():
             G.add_edge(synapse, fs, key=1,
-                       weight=net[fs].goalWeights[synapse])
+                       weight=net[fs].goalValues[synapse])
         for synapse in net[fs].problemWeights.keys():
             G.add_edge(synapse, fs, key=0,
-                       weight=net[fs].problemWeights[synapse])
+                       weight=net[fs].problemValues[synapse])
         for synapse in net[fs].controlWeights.keys():
             G.add_edge(synapse, fs, key=3,
                        weight=abs(net[fs].controlWeights[synapse]))
@@ -52,24 +52,24 @@ def drawNet(net):
                       node_layout[vertex[0]][1]]
             if vertex[2] == 0:
                 if vertex[3]['weight'] > 0:
-                    actArrStyle['fc'] = plot.cm.YlOrRd(vertex[3]['weight'])
+                    actArrStyle['fc'] = plot.cm.YlOrRd(vertex[3]['weight']*255)
                     ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
                                 arrowprops=actArrStyle)
                 else:
-                    actArrStyle['fc'] = plot.cm.Greys(abs(vertex[3]['weight']))
+                    actArrStyle['fc'] = plot.cm.Greys(abs(vertex[3]['weight'])*255)
                     print '&&& plot:', vertex
                     ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
                                 arrowprops=actArrStyle)
             if vertex[2] == 1:
-                predArrStyle['fc'] = plot.cm.Greens(vertex[3]['weight'])
+                predArrStyle['fc'] = plot.cm.Greens(vertex[3]['weight']*255)
                 ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
                             arrowprops=predArrStyle)
             if vertex[2] == 2:
-                inhibitionArrStyle['fc'] = plot.cm.Blues(vertex[3]['weight'])
+                inhibitionArrStyle['fc'] = plot.cm.Blues(vertex[3]['weight']*255)
                 ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
                             arrowprops=inhibitionArrStyle)
             if vertex[2] == 3:
-                actArrStyle['fc'] = plot.cm.RdPu(vertex[3]['weight'])
+                actArrStyle['fc'] = plot.cm.RdPu(vertex[3]['weight']*255)
                 ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
                             arrowprops=actArrStyle)
 

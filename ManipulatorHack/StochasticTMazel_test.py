@@ -8,11 +8,9 @@ Created on Fri Mar 27 11:01:40 2013
 """
 import random
 import FSNpy as FSN
-import AtomFS as fs
 import matplotlib.pyplot as plt
 import scipy as np
 import VizFSN as viz
-# import operator
 
 """inputs for binary string associated with a hypercube nodes
                        [0] 000... [dim-1]
@@ -25,12 +23,14 @@ import VizFSN as viz
 """
 
 
-def probSel(weights):
-    rnd = random.random() * sum(weights)
-    for i, w in enumerate(weights):
-        rnd -= w
+def probSel(out_fs):
+    rnd = random.random() * sum([ofs.activity for ofs in out_fs])
+    if rnd == 0:
+        return out_fs[int((random.random() + 1) * dim)]
+    for ofs in out_fs:
+        rnd -= ofs.activity
         if rnd < 0:
-            return i
+            return ofs.ID
 
 
 def st2Ind(st):
@@ -41,12 +41,12 @@ def st2Ind(st):
 def inputMap(state):
     """converts binary description of the current state into activations
        of the input layer"""
-    inputs = []
+    inputs = {}
     for bit in range(len(state)):
         if state[bit] == 0:
-            inputs.append(1)
+            inputs[bit] = 0
         else:
-            inputs.append(0)
+            inputs[bit] = 1
 
     return inputs  # dict(zip(range(dim), inputs))
 
@@ -54,9 +54,13 @@ def inputMap(state):
 def outputMap(state, outFS, trans):  # TODO
     """calculates change of the environmental state caused by activities of FSs """
 
-    winFS = probSel([out.activity for out in outFS.values()])
+    winFS = 0  # probSel(outFS.values())
+    for fs in outFS.values():
+        if fs.isActive:
+            winFS = fs.ID
+
     newState = state[:]
-    newState[winFS % dim] = int(winFS / dim) - 2
+    newState[winFS % dim] = int(winFS / dim) - 1
     if trans[st2Ind(state)][st2Ind(newState)]:
         state = newState[:]
     print 'act:', winFS, ' ->', state
@@ -81,22 +85,21 @@ def setTransitions(dimension):
                 print str(bin(i))[2:], '->', str(bin(j))[2:]
     return transition
 
-
-dim = 2  # a dimension of a hypercube
+# -------------------------
+convergenceLoops = 1  # a number of FS network updates per world's state update
+period = 1000  # a period of simulation
+dim = 5  # a dimension of a hypercube
 drawFSNet = False  # draw FSNet for every FS addition
 stateTr = setTransitions(dim)
 start = [0 for i in range(dim)]  # start state
 goal = [1 for i in range(dim)]  # goal state
 
 FSNet = FSN.FSNetwork()
-FSNet.initCtrlNet(dim, 2*dim, 1)
+FSNet.initCtrlNet(dim, 2 * dim, 1)
 FSNet.addActionLinks([[l, FSNet.goalFS.keys()[0], start[l]] for l in range(dim)])
 FSNet.addPredictionLinks([[l, FSNet.goalFS.keys()[0], goal[l]] for l in range(dim)])
-
-# -------------------------
-convergenceLoops = 1  # a number of FS network updates per world's state update
-period = 50  # a period of simulation
 # ------------------------
+
 # FSNet.drawNet()
 currState = start[:]
 data = []
@@ -115,17 +118,10 @@ for t in range(period):
 
     print 't', t
     print 'goals:', goalsReached
-    print 'activations:', {k: round(v, 2) for k, v in FSNet.activation.iteritems()}
-    print 'mismatches:', {k: round(v, 2) for k, v in FSNet.mismatch.iteritems()}
-    #    tau = {}
-    #    for fs in FSNet.net.keys():
-    #        tau[fs]=FSNet.net[fs].onTime
-    #    print 'on time', tau
-    #    isact = {}
-    #    for fs in FSNet.net.keys():
-    #        isact[fs]=FSNet.net[fs].isActive
-    #    print 'active', isact
+    # print 'activations:', {k: round(v, 2) for k, v in FSNet.activation.iteritems()}
+    # print 'mismatches:', {k: round(v, 2) for k, v in FSNet.mismatch.iteritems()}
     print 'active:', FSNet.activatedFS
+    print 'hidden:', FSNet.hiddenFS.keys(), len(FSNet.hiddenFS)
     print 'failed:', FSNet.failedFS
     print 'learning:', FSNet.learningFS
     print 'mem trace:', FSNet.memoryTrace.keys()
@@ -139,18 +135,19 @@ for t in range(period):
         if j > (dim - 1):
             fs_dyn += [FSNet.activation[j]]
     data += [fs_dyn]
-    #goalFS.append([FSNet.activation[12],FSNet.mismatch[12],FSNet.net[12].isActive,FSNet.net[12].failed])
+    # goalFS.append([FSNet.activation[12],FSNet.mismatch[12],FSNet.net[12].isActive,FSNet.net[12].failed])
     goalsDyn.append(goalsReached)
     NFSDyn.append(len(FSNet.net.keys()))
-    if (currState == goal):
-        if (oldState != goal):
+    if currState == goal:
+        if oldState != goal:
             goalsReached += 1
             # break
         #        if (len(FSNet.failedFS)==0 and (np.rand() < 0.2)):# and (len(FSNet.activatedFS)==dim):
-        if (np.rand() < 0.2):
-            currState = start[:]
-            FSNet.resetActivity()
-            print currState, start
+        else:
+            if np.rand() < 1:
+                currState = start[:]
+                FSNet.resetActivity()
+                print currState, start
     if len(FSNet.matchedFS) > 0 and drawFSNet:
         plt.figure(num=('t:' + str(t)))
         plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)
@@ -158,9 +155,9 @@ for t in range(period):
 
 plt.figure()
 plt.subplot(3, 1, 1)
-plt.pcolor(np.asarray(zip(*data)))
+plt.pcolor(np.array(zip(*data)))
 plt.title('out FS dynamics')
-#plt.figure()
+# plt.figure()
 plt.subplot(3, 1, 2)
 plt.plot(goalsDyn)
 plt.title('goals reached')
