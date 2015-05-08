@@ -87,7 +87,7 @@ def setTransitions(dimension):
 
 # -------------------------
 convergenceLoops = 1  # a number of FS network updates per world's state update
-period = 1000  # a period of simulation
+period = 500  # a period of simulation
 dim = 5  # a dimension of a hypercube
 drawFSNet = False  # draw FSNet for every FS addition
 stateTr = setTransitions(dim)
@@ -137,7 +137,7 @@ for t in range(period):
     data += [fs_dyn]
     # goalFS.append([FSNet.activation[12],FSNet.mismatch[12],FSNet.net[12].isActive,FSNet.net[12].failed])
     goalsDyn.append(goalsReached)
-    NFSDyn.append(len(FSNet.net.keys()))
+    NFSDyn.append(len(FSNet.hiddenFS.keys()))
     if currState == goal:
         if oldState != goal:
             goalsReached += 1
