@@ -88,16 +88,20 @@ class FSNetwork:
         """updates input values of the given FS"""
 
         self.net[fs].problemState = {k: self.net[k].activity
-                                     for k in self.net[fs].problemWeights.iterkeys()}
+                                     for k in self.net[fs].problemWeights.iterkeys()
+                                     if self.net[k].isActive}
         # if not self.net[k].isLearning}
         self.net[fs].goalState = {k: self.net[k].activity
-                                  for k in self.net[fs].goalWeights.iterkeys()}
+                                  for k in self.net[fs].goalWeights.iterkeys()
+                                  if self.net[k].isActive}
         # if not self.net[k].isLearning}
         self.net[fs].lateralState = {k: self.net[k].activity
-                                     for k in self.net[fs].lateralWeights.iterkeys()}
+                                     for k in self.net[fs].lateralWeights.iterkeys()
+                                     if self.net[k].isActive}
         # if self.net[k].isActive and not self.net[k].isLearning}
         self.net[fs].controlState = {k: self.net[k].activity
-                                     for k in self.net[fs].controlWeights.iterkeys()}
+                                     for k in self.net[fs].controlWeights.iterkeys()
+                                     if self.net[k].isActive}
         # if not self.net[k].isLearning}
 
     # noinspection PyUnusedLocal
@@ -130,13 +134,16 @@ class FSNetwork:
         for fs in self.goalFS.values():
             self.updateFSInputs(fs.ID)
             self.activation[fs.ID], self.mismatch[fs.ID] = fs.update(time)
+            if fs.mismatch >= fs.pr_threshold:
+                self.resetUsedFS(fs)
 
         # updating hidden FSs
         fs_s = sorted(self.hiddenFS.keys(), reverse=True)
         for fs in fs_s:
             # updating FS inputs
-            self.updateFSInputs(fs)
-            self.activation[fs], self.mismatch[fs] = self.hiddenFS[fs].update(time)
+            if not self.hiddenFS[fs].wasUsed:
+                self.updateFSInputs(fs)
+                self.activation[fs], self.mismatch[fs] = self.hiddenFS[fs].update(time)
             # if self.net[fs].isActive and self.net[fs].onTime == 1:
             # self.setPlasticWeights(fs, inputStates)
 
@@ -218,6 +225,17 @@ class FSNetwork:
 
     # end learn
 
+    def resetUsedFS(self, gFS):
+        """ reactivates hidden FS that were used for the completion of the goal represented by gFS
+        :param gFS: FS with a goal completed
+        :return:        """
+        for fs_id in gFS.controlWeights.keys():
+            if gFS.controlWeights[fs_id] == -1 and self.net[fs_id].wasUsed:
+                self.hiddenFS[fs_id].wasUsed = False
+                print '# # # reset activity for FS:', fs_id
+
+
+
     def activateFS(self, values):
         """sets activations for the input FSs"""
         for fs in self.inFS.itervalues():
@@ -232,7 +250,6 @@ class FSNetwork:
         for fs in self.memoryTrace.values():
             del self.memoryTrace[fs.ID]
             self.removeFS(fs.ID)
-
 
     def setOutFS(self, fs_list):
         """marks listed FSs as outputs"""

@@ -74,7 +74,8 @@ class AtomFS:
     # - flags
     isActive = bool  # presence of FS activity
     isLearning = bool  # learning state
-    failed = bool  # FS was unable to achieve goal state
+    failed = bool  # FS was unable to achieve the goal state
+    wasUsed = bool  # FS was already activated during current goal-directed behavior
     isInput = bool  # is true if value is set externally
     isOutput = bool  # is true if the value is not predicted
     exactInputMatch = bool  # is true if the FS should be (de)activated only
@@ -109,6 +110,7 @@ class AtomFS:
         self.isActive = False
         self.isLearning = False
         self.failed = False
+        self.wasUsed = False
         self.isInput = False
         self.isOutput = False
         self.exactInputMatch = False
@@ -171,6 +173,7 @@ class AtomFS:
 
         if self.isActive and self.onTime >= self.tau:  # expected time of activation is over
             self.failed = True
+            self.wasUsed = True
             self.isActive = False
             self.activity = 0
             self.onTime = 0

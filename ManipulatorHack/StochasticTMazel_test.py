@@ -71,7 +71,36 @@ def setTransitions(dimension):
     """ setting transitions in the state space """
     space_size = np.power(2, dimension)
     transition = np.ndarray(shape=(space_size, space_size), dtype=bool)
-    transition.fill(True)  # False)
+    transition.fill(False)  # False)
+
+    state1 = [0 for i in range(dimension)]
+    state2 = state1[:]
+    for i in range(dimension):
+        state2[i] = 1
+        transition[st2Ind(state1)][st2Ind(state2)] = True  # forward transition
+        transition[st2Ind(state2)][st2Ind(state1)] = True  # backward transition
+        state1 = state2[:]
+
+    state1 = [0 for i in range(dimension)]
+    state2 = state1[:]
+    for i in range(dimension):
+        state2[dimension-i-1] = 1
+        transition[st2Ind(state1)][st2Ind(state2)] = True  # forward transition
+        transition[st2Ind(state2)][st2Ind(state1)] = True  # backward transition
+        state1 = state2[:]
+
+    for i in range(space_size):
+        for j in range(space_size):
+            if transition[i][j]:
+                print str(bin(i))[2:], '->', str(bin(j))[2:]
+    return transition
+
+
+def setTransitionsDiag(dimension):
+    """ setting transitions in the state space """
+    space_size = np.power(2, dimension)
+    transition = np.ndarray(shape=(space_size, space_size), dtype=bool)
+    transition.fill(False)  # False)
     state1 = [0 for i in range(dimension)]
     state2 = state1[:]
     for i in range(dimension):
@@ -87,8 +116,8 @@ def setTransitions(dimension):
 
 # -------------------------
 convergenceLoops = 1  # a number of FS network updates per world's state update
-period = 8000  # a period of simulation
-dim = 8  # a dimension of a hypercube
+period = 1000  # a period of simulation
+dim = 3  # a dimension of a hypercube
 drawFSNet = False  # draw FSNet for every FS addition
 stateTr = setTransitions(dim)
 start = [0 for i in range(dim)]  # start state
@@ -116,9 +145,9 @@ for t in range(period):
     if (t % convergenceLoops) == 0:
         currState = outputMap(currState, FSNet.outFS, stateTr)
 
-    print 't', t
+    print ' - - - t', t, ' - - - '
     print 'goals:', goalsReached
-    # print 'activations:', {k: round(v, 2) for k, v in FSNet.activation.iteritems()}
+    print 'activations:', {k: round(v, 2) for k, v in FSNet.activation.iteritems()}
     # print 'mismatches:', {k: round(v, 2) for k, v in FSNet.mismatch.iteritems()}
     print 'active:', FSNet.activatedFS
     print 'hidden:', FSNet.hiddenFS.keys(), len(FSNet.hiddenFS)
@@ -141,6 +170,13 @@ for t in range(period):
     if currState == goal:
         if oldState != goal:
             goalsReached += 1
+            preGoal1 = goal[:]
+            preGoal1[0] = 0
+            preGoal2 = goal[:]
+            preGoal2[dim-1] = 0
+            stateTr[st2Ind(preGoal1)][st2Ind(goal)] = np.around(np.rand())
+            stateTr[st2Ind(preGoal2)][st2Ind(goal)] = not stateTr[st2Ind(preGoal1)][st2Ind(goal)]
+
             # break
         #        if (len(FSNet.failedFS)==0 and (np.rand() < 0.2)):# and (len(FSNet.activatedFS)==dim):
         else:
@@ -153,17 +189,15 @@ for t in range(period):
         plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)
         viz.drawNet(FSNet.net)
 
-zd = np.zeros((len(data[-1]), period))
+zd = np.zeros((len(FSNet.net), period))  # @TODO find a row with max len
 for k in range(period):
     d = data[k]
     for i in range(len(d)):
         zd[i, k] = d[i]
 
-
-# print 'last', len(zd[-1])
 plt.figure()
 plt.subplot(3, 1, 1)
-plt.pcolor(zd) # np.asarray(zip(*data)))
+plt.pcolor(zd)  # np.asarray(zip(*data)))
 plt.title('out FS dynamics')
 # plt.figure()
 plt.subplot(3, 1, 2)
