@@ -31,7 +31,8 @@ class FSNetwork:
     idCounter = int  # counter for FS id's
     failedFS = []  # a list of FSs that failed at the current time
     matchedFS = []  # a list of FSs that were failed and now have prediction satisfied
-    activatedFS = []  # a list of FSs that activated at the current time
+    activatedFS = []  # a list of FSs activated at the current time
+    usedFS = []  # a list of FSs used at the current trial
     activation = {}  # dict with {fsID, activation}
     mismatch = {}
     learningFS = []
@@ -89,37 +90,41 @@ class FSNetwork:
 
         self.net[fs].problemState = {k: self.net[k].activity
                                      for k in self.net[fs].problemWeights.iterkeys()
-                                     if self.net[k].isActive}
+                                     if not self.net[k].wasUsed and self.net[k].isActive}
         # if not self.net[k].isLearning}
         self.net[fs].goalState = {k: self.net[k].activity
                                   for k in self.net[fs].goalWeights.iterkeys()
-                                  if self.net[k].isActive}
+                                  if not self.net[k].wasUsed and self.net[k].isActive}
         # if not self.net[k].isLearning}
         self.net[fs].lateralState = {k: self.net[k].activity
                                      for k in self.net[fs].lateralWeights.iterkeys()
-                                     if self.net[k].isActive}
+                                     if not self.net[k].wasUsed and self.net[k].isActive}
         # if self.net[k].isActive and not self.net[k].isLearning}
         self.net[fs].controlState = {k: self.net[k].activity
                                      for k in self.net[fs].controlWeights.iterkeys()
-                                     if self.net[k].isActive}
+                                     if not self.net[k].wasUsed and self.net[k].isActive}
         # if not self.net[k].isLearning}
 
     # noinspection PyUnusedLocal
-    def updateFSInputsOld(self, fs):
-        """updates input values of the given FS"""
-
-        self.net[fs].problemState = {k: self.net[k].oldActivity
-                                     for k in self.net[fs].problemWeights.iterkeys()}
-        # if not self.net[k].isLearning}
-        self.net[fs].goalState = {k: self.net[k].oldActivity
-                                  for k in self.net[fs].goalWeights.iterkeys()}
-        # if not self.net[k].isLearning}
-        self.net[fs].lateralState = {k: self.net[k].oldActivity
-                                     for k in self.net[fs].lateralWeights.iterkeys()}
-        # if self.net[k].isActive and not self.net[k].isLearning}
-        self.net[fs].controlState = {k: self.net[k].oldActivity
-                                     for k in self.net[fs].controlWeights.iterkeys()}
-        # if not self.net[k].isLearning}
+    # def updateFSInputsOld(self, fs):
+    #     """updates input values of the given FS"""
+    #
+    #     self.net[fs].problemState = {k: self.net[k].oldActivity
+    #                                  for k in self.net[fs].problemWeights.iterkeys()
+    #                                  if not self.net[k].wasUsed and self.net[k].isAcive}
+    #     # if not self.net[k].isLearning}
+    #     self.net[fs].goalState = {k: self.net[k].oldActivity
+    #                               for k in self.net[fs].goalWeights.iterkeys()
+    #                               if not self.net[k].wasUsed and self.net[k].isAcive}
+    #     # if not self.net[k].isLearning}
+    #     self.net[fs].lateralState = {k: self.net[k].oldActivity
+    #                                  for k in self.net[fs].lateralWeights.iterkeys()
+    #                                  if not self.net[k].wasUsed and self.net[k].isAcive}
+    #     # if self.net[k].isActive and not self.net[k].isLearning}
+    #     self.net[fs].controlState = {k: self.net[k].oldActivity
+    #                                  for k in self.net[fs].controlWeights.iterkeys()
+    #                                  if not self.net[k].wasUsed and self.net[k].isAcive}
+    #     # if not self.net[k].isLearning}
 
     def update(self, time, inputStates):
         """updates the network given values of activations for input elements"""
@@ -134,16 +139,14 @@ class FSNetwork:
         for fs in self.goalFS.values():
             self.updateFSInputs(fs.ID)
             self.activation[fs.ID], self.mismatch[fs.ID] = fs.update(time)
-            if fs.mismatch >= fs.pr_threshold:
-                self.resetUsedFS(fs)
+            fs.wasUsed = False
 
         # updating hidden FSs
         fs_s = sorted(self.hiddenFS.keys(), reverse=True)
         for fs in fs_s:
             # updating FS inputs
-            if not self.hiddenFS[fs].wasUsed:
-                self.updateFSInputs(fs)
-                self.activation[fs], self.mismatch[fs] = self.hiddenFS[fs].update(time)
+            self.updateFSInputs(fs)
+            self.activation[fs], self.mismatch[fs] = self.hiddenFS[fs].update(time)
             # if self.net[fs].isActive and self.net[fs].onTime == 1:
             # self.setPlasticWeights(fs, inputStates)
 
@@ -153,6 +156,7 @@ class FSNetwork:
         for fs in self.outFS.values():
             self.updateFSInputs(fs.ID)
             self.activation[fs.ID], self.mismatch[fs.ID] = fs.update(time)
+            fs.wasUsed = False
             if fs.activity > maxOut[1]:
                 maxOut = (fs.ID, fs.activity)
                 if fs.isActive:
@@ -168,6 +172,11 @@ class FSNetwork:
                 if fs.isActive and fs.ID != maxOut[0]:
                     fs.isActive = False
 
+        # re-checking goal FSs
+        for fs in self.goalFS.values():
+            if fs.mismatch >= fs.pr_threshold:
+                self.resetUsedFS(fs)
+
         self.logActivity()
 
         self.learn(time)
@@ -178,7 +187,9 @@ class FSNetwork:
         """ modifies network structure to save new experience
         :return:
         """
-        activeHiddenFS = set(self.activatedFS).intersection(self.hiddenFS.keys())
+        activeHiddenFS = [fs for fs in self.hiddenFS.values()
+                          if not fs.wasUsed and fs.isActive]
+# set(self.activatedFS).intersection(self.hiddenFS.keys())
 
         # checking if existing tentative FSs were effective
 
@@ -199,6 +210,8 @@ class FSNetwork:
                     if inFS.isActive:
                         fs.goalValues[inFS.ID] = inFS.activity
                         fs.goalWeights[inFS.ID] = 1
+                for activeHFS in activeHiddenFS:
+                    activeHFS.controlWeights[fs.ID] = 1
                 self.hiddenFS[fs.ID] = fs
                 self.net[fs.ID] = fs
                 print "fs:", fs.ID, "is activated!  <<<<< <<< <<  <  <"
@@ -231,15 +244,14 @@ class FSNetwork:
         :return:        """
         for fs_id in gFS.controlWeights.keys():
             if gFS.controlWeights[fs_id] == -1 and self.net[fs_id].wasUsed:
-                self.hiddenFS[fs_id].wasUsed = False
+                self.net[fs_id].wasUsed = False
                 print '# # # reset activity for FS:', fs_id
-
-
 
     def activateFS(self, values):
         """sets activations for the input FSs"""
         for fs in self.inFS.itervalues():
             self.activation[fs.ID] = fs.setFSActivation(values[fs.ID])
+            fs.wasUsed = False
 
     def resetActivity(self):
         """resets activity for all FS in the net"""
@@ -323,6 +335,11 @@ class FSNetwork:
 
         problemFS.controlWeights[newFS.ID] = -1
 
+        # adding links to lateral FS
+        for fs in self.hiddenFS.values():
+            if fs.isActive and fs.wasUsed:
+                fs.lateralWeights[newFS.ID] = -1
+
         # adding links to actions
         for fs in self.outFS.values():
             if fs.isActive:
@@ -375,5 +392,6 @@ class FSNetwork:
             if self.net[fs].isLearning:
                 self.learningFS.append(fs)
         self.matchedFS = wasFailed[:]
+        self.usedFS = [fs.ID for fs in self.net.values() if fs.wasUsed]
 
         # end of logActivity

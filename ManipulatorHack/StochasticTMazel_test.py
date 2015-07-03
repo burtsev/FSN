@@ -141,15 +141,20 @@ NFSDyn = []
 for t in range(period):
 
     FSNet.update(t, inputMap(currState))
+
     oldState = currState[:]
     if (t % convergenceLoops) == 0:
         currState = outputMap(currState, FSNet.outFS, stateTr)
+
+    if oldState == goal:
+        currState = goal
 
     print ' - - - t', t, ' - - - '
     print 'goals:', goalsReached
     print 'activations:', {k: round(v, 2) for k, v in FSNet.activation.iteritems()}
     # print 'mismatches:', {k: round(v, 2) for k, v in FSNet.mismatch.iteritems()}
     print 'active:', FSNet.activatedFS
+    print 'usedFS:', FSNet.usedFS
     print 'hidden:', FSNet.hiddenFS.keys(), len(FSNet.hiddenFS)
     print 'failed:', FSNet.failedFS
     print 'learning:', FSNet.learningFS
@@ -170,6 +175,10 @@ for t in range(period):
     if currState == goal:
         if oldState != goal:
             goalsReached += 1
+
+            # break
+        #        if (len(FSNet.failedFS)==0 and (np.rand() < 0.2)):# and (len(FSNet.activatedFS)==dim):
+        else:
             preGoal1 = goal[:]
             preGoal1[0] = 0
             preGoal2 = goal[:]
@@ -177,13 +186,11 @@ for t in range(period):
             stateTr[st2Ind(preGoal1)][st2Ind(goal)] = np.around(np.rand())
             stateTr[st2Ind(preGoal2)][st2Ind(goal)] = not stateTr[st2Ind(preGoal1)][st2Ind(goal)]
 
-            # break
-        #        if (len(FSNet.failedFS)==0 and (np.rand() < 0.2)):# and (len(FSNet.activatedFS)==dim):
-        else:
-            if np.rand() < 1:
+            if np.rand() < 2:
                 currState = start[:]
                 FSNet.resetActivity()
                 print currState, start
+
     if len(FSNet.matchedFS) > 0 and drawFSNet:
         plt.figure(num=('t:' + str(t)))
         plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)

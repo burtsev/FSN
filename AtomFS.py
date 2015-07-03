@@ -110,7 +110,7 @@ class AtomFS:
         self.isActive = False
         self.isLearning = False
         self.failed = False
-        self.wasUsed = False
+        self.wasUsed = True
         self.isInput = False
         self.isOutput = False
         self.exactInputMatch = False
