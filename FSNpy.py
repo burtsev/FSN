@@ -211,7 +211,8 @@ class FSNetwork:
                         fs.goalValues[inFS.ID] = inFS.activity
                         fs.goalWeights[inFS.ID] = 1
                 for activeHFS in activeHiddenFS:
-                    activeHFS.controlWeights[fs.ID] = 1
+                    activeHFS.problemWeights[fs.ID] = 1  # the weight for the sequence
+                    activeHFS.problemValues[fs.ID] = 1
                 self.hiddenFS[fs.ID] = fs
                 self.net[fs.ID] = fs
                 print "fs:", fs.ID, "is activated!  <<<<< <<< <<  <  <"
@@ -337,8 +338,11 @@ class FSNetwork:
 
         # adding links to lateral FS
         for fs in self.hiddenFS.values():
-            if fs.isActive and fs.wasUsed:
+            if fs.wasActive[-2] and fs.wasUsed:
                 fs.lateralWeights[newFS.ID] = -1
+            if fs.wasActive[-1] and fs.wasUsed:
+                newFS.lateralWeights[fs.ID] = -1
+                # newFS.lateralWeights[fs.ID] = -1
 
         # adding links to actions
         for fs in self.outFS.values():

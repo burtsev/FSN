@@ -116,7 +116,7 @@ def setTransitionsDiag(dimension):
 
 # -------------------------
 convergenceLoops = 1  # a number of FS network updates per world's state update
-period = 1000  # a period of simulation
+period = 600  # a period of simulation
 dim = 3  # a dimension of a hypercube
 drawFSNet = False  # draw FSNet for every FS addition
 stateTr = setTransitions(dim)

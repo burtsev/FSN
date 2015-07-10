@@ -24,7 +24,7 @@ def weightedSum(inputs, weights, norm=False):  # calculation of weighted sum, ar
 def rbf(inputs, centroids, weights):
     if len(inputs) > 0:
         icw = np.array([[inputs[i], centroids[i], weights[i]]
-                        for i in centroids.keys()])
+                        for i in inputs.keys()])
         sw = np.absolute(np.subtract(icw[:, 0], icw[:, 1]))
         return np.exp(-10 * np.multiply(sw, icw[:, 2]).sum())  # /len(inputs))
     else:
