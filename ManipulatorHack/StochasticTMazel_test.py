@@ -223,4 +223,8 @@ plt.figure()
 plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)
 viz.drawNet(FSNet.net)
 
+plt.figure()
+plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)
+viz.drawStateTransitions(FSNet.hiddenFS)
+
 plt.show()

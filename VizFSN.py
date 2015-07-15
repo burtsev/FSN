@@ -78,3 +78,27 @@ def drawNet(net):
     plot.subplots_adjust(left=0.0, right=1., top=1., bottom=0.0)
     plot.show()
     # todo - handle self-links
+
+
+def drawStateTransitions(net):
+    """draws the FS network"""
+
+    G = nx.MultiDiGraph()
+    states = [vec2st(fs.problemValues.values()) for fs in net.values()]
+    G.add_nodes_from(states)
+    for fs in net.values():
+        start = vec2st(fs.problemValues.values())
+        end = vec2st(fs.goalValues.values())
+        G.add_edge(start, end)
+    pos = nx.circular_layout(G)  # nx.graphviz_layout(G,prog="neato")
+    plot.cla()
+    nx.draw(G, pos)
+    plot.subplots_adjust(left=0.0, right=1., top=1., bottom=0.0)
+    plot.show()
+
+
+def vec2st(vec):
+    st = ''
+    for e in vec:
+        st = st + '|' + str(e)
+    return st
