@@ -105,27 +105,6 @@ class FSNetwork:
                                      if not self.net[k].wasUsed and self.net[k].isActive}
         # if not self.net[k].isLearning}
 
-    # noinspection PyUnusedLocal
-    # def updateFSInputsOld(self, fs):
-    #     """updates input values of the given FS"""
-    #
-    #     self.net[fs].problemState = {k: self.net[k].oldActivity
-    #                                  for k in self.net[fs].problemWeights.iterkeys()
-    #                                  if not self.net[k].wasUsed and self.net[k].isAcive}
-    #     # if not self.net[k].isLearning}
-    #     self.net[fs].goalState = {k: self.net[k].oldActivity
-    #                               for k in self.net[fs].goalWeights.iterkeys()
-    #                               if not self.net[k].wasUsed and self.net[k].isAcive}
-    #     # if not self.net[k].isLearning}
-    #     self.net[fs].lateralState = {k: self.net[k].oldActivity
-    #                                  for k in self.net[fs].lateralWeights.iterkeys()
-    #                                  if not self.net[k].wasUsed and self.net[k].isAcive}
-    #     # if self.net[k].isActive and not self.net[k].isLearning}
-    #     self.net[fs].controlState = {k: self.net[k].oldActivity
-    #                                  for k in self.net[fs].controlWeights.iterkeys()
-    #                                  if not self.net[k].wasUsed and self.net[k].isAcive}
-    #     # if not self.net[k].isLearning}
-
     def update(self, time, inputStates):
         """updates the network given values of activations for input elements"""
 
@@ -142,7 +121,7 @@ class FSNetwork:
             fs.wasUsed = False
 
         # updating hidden FSs
-        fs_s = sorted(self.hiddenFS.keys(), reverse=True)
+        fs_s = sorted(self.hiddenFS.keys())
         for fs in fs_s:
             # updating FS inputs
             self.updateFSInputs(fs)
@@ -187,9 +166,16 @@ class FSNetwork:
         """ modifies network structure to save new experience
         :return:
         """
-        activeHiddenFS = [fs for fs in self.hiddenFS.values()
-                          if not fs.wasUsed and fs.isActive]
-# set(self.activatedFS).intersection(self.hiddenFS.keys())
+
+        activeHiddenFS = []
+        activeHiddenUsedFS = []
+        for fs in self.hiddenFS.values():
+            if fs.isActive:
+                if fs.wasUsed:
+                    activeHiddenUsedFS.append(fs)
+                else:
+                    activeHiddenFS.append(fs)
+        # set(self.activatedFS).intersection(self.hiddenFS.keys())
 
         # checking if existing tentative FSs were effective
 
@@ -202,7 +188,7 @@ class FSNetwork:
 
         for fs in self.memoryTrace.values():
             # integrate effective FS in the network
-            print fs.ID, " learn/ par.:", fs.parentID, "# hidFS:", len(activeHiddenFS)
+            # print fs.ID, " learn/ par.:", fs.parentID, "# hidFS:", len(activeHiddenFS)
             if fs.parentID in self.matchedFS or len(activeHiddenFS) > 0:
                 fs.tau = time - fs.startTime
                 # adding links to predict current state of environment
@@ -211,8 +197,9 @@ class FSNetwork:
                         fs.goalValues[inFS.ID] = inFS.activity
                         fs.goalWeights[inFS.ID] = 1
                 for activeHFS in activeHiddenFS:
-                    activeHFS.problemWeights[fs.ID] = 1  # the weight for the sequence
-                    activeHFS.problemValues[fs.ID] = 1
+                    activeHFS.lateralWeights[fs.ID] = 0.1  # the weight for the sequence
+               #  for activeHFS in activeHiddenUsedFS:
+                  #  activeHFS.lateralWeights[fs.ID] = -1  # the weight for the sequence
                 self.hiddenFS[fs.ID] = fs
                 self.net[fs.ID] = fs
                 print "fs:", fs.ID, "is activated!  <<<<< <<< <<  <  <"
@@ -229,7 +216,7 @@ class FSNetwork:
                     newFS = self.createFS(gFS)
                     newFS.startTime = time
                     self.memoryTrace[newFS.ID] = newFS
-                    print newFS.ID, "created / parent:", newFS.parentID
+                    # print newFS.ID, "created / parent:", newFS.parentID
 
                     # TODO: пластичность весов от мотивационной ФС
                     # prune ineffective connections
@@ -239,6 +226,42 @@ class FSNetwork:
 
     # end learn
 
+    def createFS(self, problemFS):
+
+        newFS = self.add(FS.AtomFS())
+        newFS.parentID = problemFS.ID
+        newFS.controlWeights[problemFS.ID] = 1
+
+        # adding links to recognize current state of environment
+        for fs in self.inFS.values():
+            if fs.isActive:
+                newFS.problemValues[fs.ID] = fs.activity
+                newFS.problemWeights[fs.ID] = 1
+
+        # TODO:  adding links to recognize current state of the self activation
+        # for fs in self.hiddenFS:
+        # if fs.isActive:
+        # newFS.problemWeights[fs.ID] = 1
+
+        problemFS.controlWeights[newFS.ID] = -1
+
+        # adding links to lateral FS
+        for fs in self.hiddenFS.values():
+            # if fs.wasActive[-2] and fs.wasUsed:
+            # fs.lateralWeights[newFS.ID] = -1
+            # if fs.wasActive[-1] and fs.wasUsed:
+            # newFS.lateralWeights[fs.ID] = -1
+            if fs.isActive and fs.wasUsed:
+                # fs.lateralWeights[newFS.ID] = -1
+                newFS.lateralWeights[fs.ID] = -1
+
+        # adding links to actions
+        for fs in self.outFS.values():
+            if fs.isActive:
+                fs.controlWeights[newFS.ID] = 2
+
+        return newFS
+
     def resetUsedFS(self, gFS):
         """ reactivates hidden FS that were used for the completion of the goal represented by gFS
         :param gFS: FS with a goal completed
@@ -246,7 +269,7 @@ class FSNetwork:
         for fs_id in gFS.controlWeights.keys():
             if gFS.controlWeights[fs_id] == -1 and self.net[fs_id].wasUsed:
                 self.net[fs_id].wasUsed = False
-                print '# # # reset activity for FS:', fs_id
+                #  print '# # # reset activity for FS:', fs_id
 
     def activateFS(self, values):
         """sets activations for the input FSs"""
@@ -316,40 +339,6 @@ class FSNetwork:
                 del self.net[fs].goalWeights[ID]
             if ID in self.net[fs].controlWeights.keys():
                 del self.net[fs].controlWeights[ID]
-
-    def createFS(self, problemFS):
-
-        newFS = self.add(FS.AtomFS())
-        newFS.parentID = problemFS.ID
-        newFS.controlWeights[problemFS.ID] = 1
-
-        # adding links to recognize current state of environment
-        for fs in self.inFS.values():
-            if fs.isActive:
-                newFS.problemValues[fs.ID] = fs.activity
-                newFS.problemWeights[fs.ID] = 1
-
-        # TODO:  adding links to recognize current state of the self activation
-        # for fs in self.hiddenFS:
-        # if fs.isActive:
-        # newFS.problemWeights[fs.ID] = 1
-
-        problemFS.controlWeights[newFS.ID] = -1
-
-        # adding links to lateral FS
-        for fs in self.hiddenFS.values():
-            if fs.wasActive[-2] and fs.wasUsed:
-                fs.lateralWeights[newFS.ID] = -1
-            if fs.wasActive[-1] and fs.wasUsed:
-                newFS.lateralWeights[fs.ID] = -1
-                # newFS.lateralWeights[fs.ID] = -1
-
-        # adding links to actions
-        for fs in self.outFS.values():
-            if fs.isActive:
-                fs.controlWeights[newFS.ID] = 2
-
-        return newFS
 
     def addActionLinks(self, links):
         """creates links between FSs. Input format [[start, end, weight]]"""

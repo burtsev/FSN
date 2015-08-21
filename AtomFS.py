@@ -92,7 +92,7 @@ class AtomFS:
         self.controlWeights = {}
         self.plasticWeights = {}
         self.tau = 1
-        self.threshold = 0.6
+        self.threshold = 0.95
         self.noise = 0.001
         self.k = 10  # k and x0 are chosen to have output 0.5 for normalized weighted
         self.x0 = 0.5  # input of 0.5 and high activation for input = 1
@@ -171,14 +171,15 @@ class AtomFS:
         if self.isActive:
             self.onTime = time - self.startTime
 
-        if self.isActive and self.onTime >= self.tau:  # expected time of activation is over
+        if self.isActive and self.onTime >= self.tau and not self.wasUsed:  # expected time of activation is over
             self.failed = True
             self.wasUsed = True
-            self.isActive = False
             self.activity = 0
-            self.onTime = 0
+            self.isActive = False
+
             if self.calcGoalMismatch() >= self.pr_threshold:  # the goal has been obtained
                 self.failed = False
+                self.onTime = 0
                 # else:
                 # # if the goal hasn't been obtained then
                 # # correct problem weights to make FS activation more specific
@@ -187,7 +188,7 @@ class AtomFS:
                 #     print ' wpr:', self.problemWeights
                 #     print ' pl w:', self.plasticWeights
         else:
-            wInSum = 0.3*self.oldActivity
+            wInSum = 0.2*self.oldActivity
             wInSum += 0.8*self.calcProblemActivation()
             wInSum += self.calcLateralActivation()
             wInSum += 0.5*self.calcControlActivation()

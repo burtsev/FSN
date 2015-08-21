@@ -63,7 +63,7 @@ def outputMap(state, outFS, trans):  # TODO
     newState[winFS % dim] = int(winFS / dim) - 1
     if trans[st2Ind(state)][st2Ind(newState)]:
         state = newState[:]
-    print 'act:', winFS, ' ->', state
+    # print 'act:', winFS, ' ->', state
     return state
 
 
@@ -116,9 +116,11 @@ def setTransitionsDiag(dimension):
 
 # -------------------------
 convergenceLoops = 1  # a number of FS network updates per world's state update
-period = 600  # a period of simulation
-dim = 3  # a dimension of a hypercube
+period = 3000  # a period of simulation
+dim = 5  # a dimension of a hypercube
 drawFSNet = False  # draw FSNet for every FS addition
+printLog = False
+stochEnv = True  # stochasticity of the environment
 stateTr = setTransitions(dim)
 start = [0 for i in range(dim)]  # start state
 goal = [1 for i in range(dim)]  # goal state
@@ -134,6 +136,7 @@ currState = start[:]
 data = []
 goalFS = []
 goalsReached = 0
+NHiddenFS = 0
 goalsDyn = []
 NFSDyn = []
 
@@ -148,21 +151,21 @@ for t in range(period):
 
     if oldState == goal:
         currState = goal
-
-    print ' - - - t', t, ' - - - '
-    print 'goals:', goalsReached
-    print 'activations:', {k: round(v, 2) for k, v in FSNet.activation.iteritems()}
-    # print 'mismatches:', {k: round(v, 2) for k, v in FSNet.mismatch.iteritems()}
-    print 'active:', FSNet.activatedFS
-    print 'usedFS:', FSNet.usedFS
-    print 'hidden:', FSNet.hiddenFS.keys(), len(FSNet.hiddenFS)
-    print 'failed:', FSNet.failedFS
-    print 'learning:', FSNet.learningFS
-    print 'mem trace:', FSNet.memoryTrace.keys()
-    print 'matched:', FSNet.matchedFS
-    #    print 'net:', FSNet.net.keys()
-    print currState
-    print '-'
+    print ' - - - t', t, ' - - - ', 'goals:', goalsReached
+    if printLog:
+        print 'goals:', goalsReached
+        print 'activations:', {k: round(v, 2) for k, v in FSNet.activation.iteritems()}
+        # print 'mismatches:', {k: round(v, 2) for k, v in FSNet.mismatch.iteritems()}
+        print 'active:', FSNet.activatedFS
+        print 'usedFS:', FSNet.usedFS
+        print 'hidden:', FSNet.hiddenFS.keys(), len(FSNet.hiddenFS)
+        print 'failed:', FSNet.failedFS
+        print 'learning:', FSNet.learningFS
+        print 'mem trace:', FSNet.memoryTrace.keys()
+        print 'matched:', FSNet.matchedFS
+        #    print 'net:', FSNet.net.keys()
+        print currState
+        print '-'
     # data += [[output[6],output[7],output[8],output[9],output[10],output[11]]]
     fs_dyn = []
     for j in sorted(FSNet.activation.iterkeys()):
@@ -179,22 +182,23 @@ for t in range(period):
             # break
         #        if (len(FSNet.failedFS)==0 and (np.rand() < 0.2)):# and (len(FSNet.activatedFS)==dim):
         else:
-            preGoal1 = goal[:]
-            preGoal1[0] = 0
-            preGoal2 = goal[:]
-            preGoal2[dim-1] = 0
-            stateTr[st2Ind(preGoal1)][st2Ind(goal)] = np.around(np.rand())
-            stateTr[st2Ind(preGoal2)][st2Ind(goal)] = not stateTr[st2Ind(preGoal1)][st2Ind(goal)]
+            if stochEnv:
+                preGoal1 = goal[:]
+                preGoal1[0] = 0
+                preGoal2 = goal[:]
+                preGoal2[dim-1] = 0
+                stateTr[st2Ind(preGoal1)][st2Ind(goal)] = np.around(np.rand())
+                stateTr[st2Ind(preGoal2)][st2Ind(goal)] = not stateTr[st2Ind(preGoal1)][st2Ind(goal)]
 
             if np.rand() < 2:
                 currState = start[:]
                 FSNet.resetActivity()
-                print currState, start
+                #  print currState, start
 
-    if len(FSNet.matchedFS) > 0 and drawFSNet:
+    if len(FSNet.hiddenFS) > NHiddenFS and drawFSNet:
         plt.figure(num=('t:' + str(t)))
-        plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)
         viz.drawNet(FSNet.net)
+        NHiddenFS = len(FSNet.hiddenFS)
 
 zd = np.zeros((len(FSNet.net), period))  # @TODO find a row with max len
 for k in range(period):
@@ -220,11 +224,12 @@ plt.title('number of FS')
 #plt.bar(range(-1,(len(gFSdata[3])-1)),gFSdata[3],width=0.8,color='lightBlue')
 
 plt.figure()
-plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)
 viz.drawNet(FSNet.net)
 
-plt.figure()
-plt.subplots_adjust(left=0.02, right=0.98, top=1., bottom=0.0)
-viz.drawStateTransitions(FSNet.hiddenFS)
+# plt.figure()
+# viz.drawStateTransitions(FSNet.hiddenFS, dim)
 
 plt.show()
+
+print "Visualization done"
+
