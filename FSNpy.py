@@ -34,8 +34,12 @@ class FSNetwork:
     activatedFS = []  # a list of FSs activated at the current time
     usedFS = []  # a list of FSs used at the current trial
     activation = {}  # dict with {fsID, activation}
+    activationHist = {}
     mismatch = {}
+    mismatchHist = {}
     learningFS = []
+    prnLg = False
+    reentry = 2
 
     def __init__(self):
         self.inFS = {}  # a list of input FS
@@ -88,24 +92,24 @@ class FSNetwork:
     def updateFSInputs(self, fs):
         """updates input values of the given FS"""
 
-        self.net[fs].problemState = {k: self.net[k].activity
+        self.net[fs].problemState = {k: self.net[k].oldActivity
                                      for k in self.net[fs].problemWeights.iterkeys()
                                      if not self.net[k].wasUsed and self.net[k].isActive}
         # if not self.net[k].isLearning}
-        self.net[fs].goalState = {k: self.net[k].activity
+        self.net[fs].goalState = {k: self.net[k].oldActivity
                                   for k in self.net[fs].goalWeights.iterkeys()
                                   if not self.net[k].wasUsed and self.net[k].isActive}
         # if not self.net[k].isLearning}
-        self.net[fs].lateralState = {k: self.net[k].activity
+        self.net[fs].lateralState = {k: self.net[k].oldActivity
                                      for k in self.net[fs].lateralWeights.iterkeys()
                                      if not self.net[k].wasUsed and self.net[k].isActive}
         # if self.net[k].isActive and not self.net[k].isLearning}
-        self.net[fs].controlState = {k: self.net[k].activity
+        self.net[fs].controlState = {k: self.net[k].oldActivity
                                      for k in self.net[fs].controlWeights.iterkeys()
                                      if not self.net[k].wasUsed and self.net[k].isActive}
         # if not self.net[k].isLearning}
 
-    def update(self, time, inputStates):
+    def update(self, time, inputStates, t):
         """updates the network given values of activations for input elements"""
 
         self.activation = {}  # dict with {fsID, activation}
@@ -126,8 +130,6 @@ class FSNetwork:
             # updating FS inputs
             self.updateFSInputs(fs)
             self.activation[fs], self.mismatch[fs] = self.hiddenFS[fs].update(time)
-            # if self.net[fs].isActive and self.net[fs].onTime == 1:
-            # self.setPlasticWeights(fs, inputStates)
 
         # updating action FSs
         noActiveOut = True
@@ -156,7 +158,18 @@ class FSNetwork:
             if fs.mismatch >= fs.pr_threshold:
                 self.resetUsedFS(fs)
 
-        self.logActivity()
+        self.logActivity(time, t)
+
+    def step(self, time, inputStates):
+
+        self.updateWorkingMemory(time)
+        self.matchedFS = []
+
+        for t in range(self.reentry):
+            self.update(time, inputStates, t)
+            if self.prnLg:
+                print '----- loop:', t
+                self.printLog()
 
         self.learn(time)
 
@@ -178,18 +191,11 @@ class FSNetwork:
         # set(self.activatedFS).intersection(self.hiddenFS.keys())
 
         # checking if existing tentative FSs were effective
-
-        for fs in self.memoryTrace.values():
-            # remove tentative FSs that expired
-            if (time - fs.startTime) > fs.tau:  # TODO: make the removal probabilistic
-                del self.memoryTrace[fs.ID]
-                # print "fs:", fs.ID, "is deleted. tau =", fs.tau
-                self.removeFS(fs.ID)
-
         for fs in self.memoryTrace.values():
             # integrate effective FS in the network
             # print fs.ID, " learn/ par.:", fs.parentID, "# hidFS:", len(activeHiddenFS)
-            if fs.parentID in self.matchedFS or len(activeHiddenFS) > 0:
+            if len(set(fs.goalID).intersection(self.matchedFS)) > 0 \
+                    or len(activeHiddenFS) > 0: #fs.parentID in self.matchedFS or
                 fs.tau = time - fs.startTime
                 # adding links to predict current state of environment
                 for inFS in self.inFS.values():
@@ -198,39 +204,34 @@ class FSNetwork:
                         fs.goalWeights[inFS.ID] = 1
                 for activeHFS in activeHiddenFS:
                     activeHFS.lateralWeights[fs.ID] = 0.1  # the weight for the sequence
-               #  for activeHFS in activeHiddenUsedFS:
-                  #  activeHFS.lateralWeights[fs.ID] = -1  # the weight for the sequence
                 self.hiddenFS[fs.ID] = fs
-                self.net[fs.ID] = fs
+                # self.net[fs.ID] = fs
+                del self.memoryTrace[fs.ID]
+
                 print "fs:", fs.ID, "is activated!  <<<<< <<< <<  <  <"
                 print "fs.prob:", fs.problemValues
                 print "fs.goal:", fs.goalValues
                 print "fs.ctrl:", fs.controlWeights
                 print "fs.lat:", fs.lateralWeights
-                del self.memoryTrace[fs.ID]
 
         # generating tentative FSs for unexpected outcomes
         if len(activeHiddenFS) == 0:
-            for gFS in self.goalFS.values():
-                if gFS.isActive or gFS.failed:
-                    newFS = self.createFS(gFS)
-                    newFS.startTime = time
-                    self.memoryTrace[newFS.ID] = newFS
-                    # print newFS.ID, "created / parent:", newFS.parentID
+            newFS = self.createFS(time)
+            self.memoryTrace[newFS.ID] = newFS
+            # print newFS.ID, "created / parent:", newFS.parentID
 
-                    # TODO: пластичность весов от мотивационной ФС
-                    # prune ineffective connections
-                    # for fs in (set(self.net.keys()) - set(inputStates.keys())):
-                    # if self.net[fs].isActive and not self.net[fs].isOutput:
-                    # self.net[fs].weightsUpdate(self.net)
+            # TODO: пластичность весов от мотивационной ФС
+            # prune ineffective connections
+            # for fs in (set(self.net.keys()) - set(inputStates.keys())):
+            # if self.net[fs].isActive and not self.net[fs].isOutput:
+            # self.net[fs].weightsUpdate(self.net)
 
     # end learn
 
-    def createFS(self, problemFS):
+    def createFS(self, time):
 
         newFS = self.add(FS.AtomFS())
-        newFS.parentID = problemFS.ID
-        newFS.controlWeights[problemFS.ID] = 1
+        newFS.startTime = time
 
         # adding links to recognize current state of environment
         for fs in self.inFS.values():
@@ -238,21 +239,10 @@ class FSNetwork:
                 newFS.problemValues[fs.ID] = fs.activity
                 newFS.problemWeights[fs.ID] = 1
 
-        # TODO:  adding links to recognize current state of the self activation
-        # for fs in self.hiddenFS:
-        # if fs.isActive:
-        # newFS.problemWeights[fs.ID] = 1
-
-        problemFS.controlWeights[newFS.ID] = -1
-
         # adding links to lateral FS
         for fs in self.hiddenFS.values():
-            # if fs.wasActive[-2] and fs.wasUsed:
-            # fs.lateralWeights[newFS.ID] = -1
-            # if fs.wasActive[-1] and fs.wasUsed:
-            # newFS.lateralWeights[fs.ID] = -1
             if fs.isActive and fs.wasUsed:
-                # fs.lateralWeights[newFS.ID] = -1
+                fs.lateralWeights[newFS.ID] = -1
                 newFS.lateralWeights[fs.ID] = -1
 
         # adding links to actions
@@ -260,7 +250,27 @@ class FSNetwork:
             if fs.isActive:
                 fs.controlWeights[newFS.ID] = 2
 
+        for gFS in self.goalFS.values():
+            if gFS.isActive or gFS.failed:
+                newFS.goalID.append(gFS.ID)
+                newFS.controlWeights[gFS.ID] = 1
+                gFS.controlWeights[newFS.ID] = -1
+
+        # TODO:  adding links to recognize current state of the self activation
+        # for fs in self.hiddenFS:
+        # if fs.isActive:
+        # newFS.problemWeights[fs.ID] = 1
+
         return newFS
+
+    def updateWorkingMemory(self, time):
+
+        for fs in self.memoryTrace.values():
+            # remove tentative FSs that expired
+            if (time - fs.startTime) > fs.tau:  # TODO: make the removal probabilistic
+                del self.memoryTrace[fs.ID]
+                # print "fs:", fs.ID, "is deleted. tau =", fs.tau
+                self.removeFS(fs.ID)
 
     def resetUsedFS(self, gFS):
         """ reactivates hidden FS that were used for the completion of the goal represented by gFS
@@ -283,6 +293,11 @@ class FSNetwork:
             self.net[fs].resetActivity()
         self.failedFS = []  # list of FSs that failed at the current time
         self.activatedFS = []  # a list of FSs that activated at the current time
+
+        for fs in self.usedFS:
+            self.net[fs].wasUsed = False
+        self.usedFS = []
+
         for fs in self.memoryTrace.values():
             del self.memoryTrace[fs.ID]
             self.removeFS(fs.ID)
@@ -364,27 +379,50 @@ class FSNetwork:
         for lnk in range(len(links)):
             self.net[links[lnk][1]].controlWeights[links[lnk][0]] = links[lnk][2]
 
-    def logActivity(self):
+    def logActivity(self, time, t):
+
         self.activatedFS = []
         wasFailed = self.failedFS[:]
         self.failedFS = []
         self.learningFS = []
+
         for inFS in self.inFS.keys():
             if self.net[inFS].isActive:  # if FS is active
                 self.activatedFS.append(self.net[inFS].ID)
+
         for fs in (set(self.net.keys()) - set(self.inFS.keys())):
-            # self.net[fs].oldActivity = self.activation[fs]
+
             # if FS has failed to reach predicted state
             if self.net[fs].failed and not self.net[fs].isLearning:
                 self.failedFS.append(self.net[fs].ID)  # add FS to the failers list
                 if self.net[fs].ID in wasFailed:
                     wasFailed.remove(self.net[fs].ID)
+
             # if FS is active
             if self.net[fs].isActive:
                 self.activatedFS.append(self.net[fs].ID)
             if self.net[fs].isLearning:
                 self.learningFS.append(fs)
-        self.matchedFS = wasFailed[:]
+
+        for fs in wasFailed:
+            self.matchedFS.append(fs)
+
         self.usedFS = [fs.ID for fs in self.net.values() if fs.wasUsed]
 
+        self.activationHist[(time+float(t)/float(self.reentry))] = self.activation
+        self.mismatchHist[(time+float(t)/float(self.reentry))] = self.mismatch
+
         # end of logActivity
+
+    def printLog(self):
+
+        print 'activations:', {k: round(v, 2) for k, v in self.activation.iteritems()}
+        # print 'mismatches:', {k: round(v, 2) for k, v in FSNet.mismatch.iteritems()}
+        print 'active:', self.activatedFS
+        print 'usedFS:', self.usedFS
+        print 'hidden:', self.hiddenFS.keys(), len(self.hiddenFS)
+        print 'failed:', self.failedFS
+        print 'learning:', self.learningFS
+        print 'mem trace:', self.memoryTrace.keys()
+        print 'matched:', self.matchedFS
+        #    print 'net:', FSNet

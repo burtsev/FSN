@@ -42,7 +42,7 @@ class AtomFS:
     # FS attributes
     # - metadata
     ID = int  # FS id
-    parentID = int  # id of parent FS
+    goalID = []  # ids of goal FS's
     # - structural parameters
     problemWeights = {}  # weights for the problemState input
     problemValues = {}  # centroids for the problemState input
@@ -171,7 +171,8 @@ class AtomFS:
         if self.isActive:
             self.onTime = time - self.startTime
 
-        if self.isActive and self.onTime >= self.tau and not self.wasUsed:  # expected time of activation is over
+        if self.isActive and self.onTime >= self.tau and \
+                not self.wasUsed and not self.isOutput:  # expected time of activation is over
             self.failed = True
             self.wasUsed = True
             self.activity = 0

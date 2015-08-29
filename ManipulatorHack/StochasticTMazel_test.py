@@ -38,6 +38,14 @@ def st2Ind(st):
     return int(''.join(map(str, st)), 2)
 
 
+def printTransitions(transition, dimension):
+    space_size = np.power(2, dimension)
+    for i in range(space_size):
+        for j in range(space_size):
+            if transition[i][j]:
+                print str(bin(i))[2:], '->', str(bin(j))[2:]
+
+
 def inputMap(state):
     """converts binary description of the current state into activations
        of the input layer"""
@@ -63,7 +71,7 @@ def outputMap(state, outFS, trans):  # TODO
     newState[winFS % dim] = int(winFS / dim) - 1
     if trans[st2Ind(state)][st2Ind(newState)]:
         state = newState[:]
-    # print 'act:', winFS, ' ->', state
+    print 'act:', winFS, ' ->', state
     return state
 
 
@@ -89,10 +97,44 @@ def setTransitions(dimension):
         transition[st2Ind(state2)][st2Ind(state1)] = True  # backward transition
         state1 = state2[:]
 
-    for i in range(space_size):
-        for j in range(space_size):
-            if transition[i][j]:
-                print str(bin(i))[2:], '->', str(bin(j))[2:]
+    printTransitions(transition, dimension)
+
+    return transition
+
+
+def setTransitionsFork(dimension):
+    """ setting transitions in the state space """
+
+    space_size = np.power(2, dimension)
+    transition = np.ndarray(shape=(space_size, space_size), dtype=bool)
+    transition.fill(False)
+
+    state1 = [0 for i in range(dimension)]
+    state2 = state1[:]
+    for i in range(dimension-1):
+        state2[1+i] = 1
+        state1[0] = 1
+        state2[0] = 1
+        transition[st2Ind(state1)][st2Ind(state2)] = True  # forward transition
+        transition[st2Ind(state2)][st2Ind(state1)] = True  # backward transition
+        state1 = state2[:]
+
+    state1 = [0 for i in range(dimension)]
+    state2 = state1[:]
+    for i in range(dimension-1):
+        state2[dimension-i-1] = 1
+        state1[0] = 1
+        state2[0] = 1
+        transition[st2Ind(state1)][st2Ind(state2)] = True  # forward transition
+        transition[st2Ind(state2)][st2Ind(state1)] = True  # backward transition
+        state1 = state2[:]
+
+    transition[0][np.power(2, (dimension-1))] = True
+    transition[np.power(2, (dimension-1))][0] = True
+
+    print 'Fork transitions'
+    printTransitions(transition, dimension)
+
     return transition
 
 
@@ -108,24 +150,25 @@ def setTransitionsDiag(dimension):
         transition[st2Ind(state1)][st2Ind(state2)] = True  # forward transition
         transition[st2Ind(state2)][st2Ind(state1)] = True  # backward transition
         state1 = state2[:]
-    for i in range(space_size):
-        for j in range(space_size):
-            if transition[i][j]:
-                print str(bin(i))[2:], '->', str(bin(j))[2:]
+
+    printTransitions(transition, dimension)
+
     return transition
 
 # -------------------------
-convergenceLoops = 1  # a number of FS network updates per world's state update
-period = 3000  # a period of simulation
-dim = 5  # a dimension of a hypercube
+convergenceLoops = 2  # a number of FS network updates per world's state update
+period = 10000  # a period of simulation
+dim = 8  # a dimension of a hypercube
 drawFSNet = False  # draw FSNet for every FS addition
 printLog = False
 stochEnv = True  # stochasticity of the environment
-stateTr = setTransitions(dim)
+stateTr = setTransitionsFork(dim)
 start = [0 for i in range(dim)]  # start state
 goal = [1 for i in range(dim)]  # goal state
 
 FSNet = FSN.FSNetwork()
+FSNet.prnLg = printLog
+FSNet.reentry = convergenceLoops
 FSNet.initCtrlNet(dim, 2 * dim, 1)
 FSNet.addActionLinks([[l, FSNet.goalFS.keys()[0], start[l]] for l in range(dim)])
 FSNet.addPredictionLinks([[l, FSNet.goalFS.keys()[0], goal[l]] for l in range(dim)])
@@ -143,29 +186,18 @@ NFSDyn = []
 # FSNet.activateFS(dict(zip(range(2*dim),inputMap(currState))))
 for t in range(period):
 
-    FSNet.update(t, inputMap(currState))
+    FSNet.step(t, inputMap(currState))
+    if printLog:
+        print 'goals:', goalsReached
 
     oldState = currState[:]
-    if (t % convergenceLoops) == 0:
-        currState = outputMap(currState, FSNet.outFS, stateTr)
+    currState = outputMap(currState, FSNet.outFS, stateTr)
 
     if oldState == goal:
         currState = goal
     print ' - - - t', t, ' - - - ', 'goals:', goalsReached
-    if printLog:
-        print 'goals:', goalsReached
-        print 'activations:', {k: round(v, 2) for k, v in FSNet.activation.iteritems()}
-        # print 'mismatches:', {k: round(v, 2) for k, v in FSNet.mismatch.iteritems()}
-        print 'active:', FSNet.activatedFS
-        print 'usedFS:', FSNet.usedFS
-        print 'hidden:', FSNet.hiddenFS.keys(), len(FSNet.hiddenFS)
-        print 'failed:', FSNet.failedFS
-        print 'learning:', FSNet.learningFS
-        print 'mem trace:', FSNet.memoryTrace.keys()
-        print 'matched:', FSNet.matchedFS
-        #    print 'net:', FSNet.net.keys()
-        print currState
-        print '-'
+    print currState
+
     # data += [[output[6],output[7],output[8],output[9],output[10],output[11]]]
     fs_dyn = []
     for j in sorted(FSNet.activation.iterkeys()):
@@ -184,16 +216,18 @@ for t in range(period):
         else:
             if stochEnv:
                 preGoal1 = goal[:]
-                preGoal1[0] = 0
+                preGoal1[1] = 0  # preGoal1[0] = 0  for the not forking env
                 preGoal2 = goal[:]
                 preGoal2[dim-1] = 0
-                stateTr[st2Ind(preGoal1)][st2Ind(goal)] = np.around(np.rand())
-                stateTr[st2Ind(preGoal2)][st2Ind(goal)] = not stateTr[st2Ind(preGoal1)][st2Ind(goal)]
+                stateTr[st2Ind(preGoal1)][st2Ind(goal)] = bool(np.around(np.rand()))
+                stateTr[st2Ind(preGoal2)][st2Ind(goal)] = \
+                    not stateTr[st2Ind(preGoal1)][st2Ind(goal)]
+                # printTransitions(stateTr, dim)
 
             if np.rand() < 2:
                 currState = start[:]
                 FSNet.resetActivity()
-                #  print currState, start
+                print currState, start
 
     if len(FSNet.hiddenFS) > NHiddenFS and drawFSNet:
         plt.figure(num=('t:' + str(t)))
@@ -229,7 +263,29 @@ viz.drawNet(FSNet.net)
 # plt.figure()
 # viz.drawStateTransitions(FSNet.hiddenFS, dim)
 
+max_len = max([len(act) for act in FSNet.activationHist.values()])
+print 'max_len', max_len
+
+time_len = (period-1)*FSNet.reentry
+print 'time_len:', time_len
+
+zd2 = np.zeros((max_len, period*FSNet.reentry))  # @TODO find a row with max len
+for k in range(time_len):
+    d = FSNet.activationHist[float(k/FSNet.reentry)]
+    j = 0
+    for i in sorted(d.keys()):
+        zd2[j, k] = d[i]
+        j += 1
+
+plt.figure()
+plt.pcolor(zd2)  #
+plt.title('FS dynamics')
+
 plt.show()
+
+f = open('fs_activiy.log', 'w')
+f.write(FSNet.activationHist)
+f.close()
 
 print "Visualization done"
 
