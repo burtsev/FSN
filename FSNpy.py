@@ -158,6 +158,11 @@ class FSNetwork:
             if fs.mismatch >= fs.pr_threshold:
                 self.resetUsedFS(fs)
 
+        for fs in self.goalFS.values():
+            fs.oldActivity = fs.activity
+        for fs in self.hiddenFS.values():
+            fs.oldActivity = fs.activity
+
         self.logActivity(time, t)
 
     def step(self, time, inputStates):

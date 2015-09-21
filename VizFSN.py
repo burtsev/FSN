@@ -136,7 +136,7 @@ def drawStateTransitions(net, dim):
     ar = plot.axes()
     actArrStyle = dict(arrowstyle='fancy',
                        shrinkA=20, shrinkB=20, aa=True,
-                       fc="red", ec="none", alpha=0.85, lw=0,
+                       fc="red", ec="none", alpha=0.1,
                        connectionstyle="arc3,rad=-0.1", )
     inhibitionArrStyle = dict(arrowstyle='fancy',
                               shrinkA=20, shrinkB=20, aa=True,
@@ -172,6 +172,7 @@ def drawStateTransitions(net, dim):
                             arrowprops=inhibitionArrStyle)
             if vertex[2] == 3:
                 actArrStyle['fc'] = plot.cm.RdPu(vertex[3]['weight']*255)
+                actArrStyle['alpha'] = 0.8
                 ar.annotate('', (coords[0], coords[1]), (coords[2], coords[3]),
                             arrowprops=actArrStyle)
 

@@ -157,10 +157,10 @@ def setTransitionsDiag(dimension):
 
 # -------------------------
 convergenceLoops = 2  # a number of FS network updates per world's state update
-period = 10000  # a period of simulation
-dim = 8  # a dimension of a hypercube
+period = 5000  # a period of simulation
+dim = 7  # a dimension of a hypercube
 drawFSNet = False  # draw FSNet for every FS addition
-printLog = False
+printLog = True
 stochEnv = True  # stochasticity of the environment
 stateTr = setTransitionsFork(dim)
 start = [0 for i in range(dim)]  # start state
@@ -283,9 +283,9 @@ plt.title('FS dynamics')
 
 plt.show()
 
-f = open('fs_activiy.log', 'w')
-f.write(FSNet.activationHist)
-f.close()
+# f = open('fs_activiy.log', 'w')
+# f.write(FSNet.activationHist)
+# f.close()
 
 print "Visualization done"
 

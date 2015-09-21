@@ -15,7 +15,7 @@ def weightedSum(inputs, weights, norm=False):  # calculation of weighted sum, ar
         wsum = np.array([[inputs[i], weights[i]]
                          for i in weights.iterkeys() if i in inputs]).prod(1).sum()
         if norm and wsum != 0:
-            wsum = wsum / sum(weights)
+            wsum = wsum / sum(abs(weights))
         return wsum
     else:
         return 0
@@ -220,7 +220,7 @@ class AtomFS:
 
         self.wasActive.pop(0)
         self.wasActive.append(self.isActive)
-        self.oldActivity = self.activity
+        # self.oldActivity = self.activity
 
         return self.calcCore(time)
 

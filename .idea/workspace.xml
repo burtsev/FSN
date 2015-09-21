@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="11c74faa-8046-4c9b-b95c-aa291c9ff5fa" name="Default" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;">
+    <list default="true" id="11c74faa-8046-4c9b-b95c-aa291c9ff5fa" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AtomFS.py" afterPath="$PROJECT_DIR$/AtomFS.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FSNpy.py" afterPath="$PROJECT_DIR$/FSNpy.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ManipulatorHack/StochasticTMazel_test.py" afterPath="$PROJECT_DIR$/ManipulatorHack/StochasticTMazel_test.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VizFSN.py" afterPath="$PROJECT_DIR$/VizFSN.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="00d4b650-da73-4b35-8498-987fcab4a04a" name="Failed commit: Default" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;" />
@@ -27,14 +28,14 @@
     <favorites_list name="FSN" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.65284973">
+    <splitter split-orientation="horizontal" split-proportion="0.34611398">
       <split-first>
         <leaf>
           <file leaf-file-name="StochasticTMazel_test.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ManipulatorHack/StochasticTMazel_test.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.33849558">
-                  <caret line="160" column="37" selection-start-line="160" selection-start-column="37" selection-end-line="160" selection-end-column="37" />
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="160" column="7" selection-start-line="160" selection-start-column="7" selection-end-line="160" selection-end-column="7" />
                   <folding>
                     <element signature="e#24#185#1" expanded="false" />
                     <element signature="e#293#638#1" expanded="false" />
@@ -58,23 +59,22 @@
           <file leaf-file-name="FSNpy.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/FSNpy.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.7765487">
-                  <caret line="34" column="38" selection-start-line="34" selection-start-column="38" selection-end-line="34" selection-end-column="38" />
+                <state vertical-scroll-proportion="0.77799225">
+                  <caret line="281" column="44" selection-start-line="281" selection-start-column="44" selection-end-line="281" selection-end-column="44" />
                   <folding>
                     <element signature="e#262#420#0" expanded="false" />
                     <element signature="e#1326#1993#0" expanded="false" />
                     <element signature="e#2041#2533#0" expanded="false" />
                     <element signature="e#2588#3009#0" expanded="false" />
-                    <element signature="e#3053#4229#0" expanded="false" />
-                    <element signature="e#6416#6498#1" expanded="false" />
-                    <element signature="e#10662#10846#0" expanded="false" />
-                    <element signature="e#11420#11548#0" expanded="false" />
-                    <element signature="e#12219#12995#0" expanded="false" />
-                    <element signature="e#13033#13592#0" expanded="false" />
-                    <element signature="e#13639#13941#0" expanded="false" />
-                    <element signature="e#13989#14189#0" expanded="false" />
-                    <element signature="e#14240#14490#0" expanded="false" />
-                    <element signature="e#14538#14726#0" expanded="false" />
+                    <element signature="e#6581#6663#1" expanded="false" />
+                    <element signature="e#10827#11011#0" expanded="false" />
+                    <element signature="e#11585#11713#0" expanded="false" />
+                    <element signature="e#12384#13160#0" expanded="false" />
+                    <element signature="e#13198#13757#0" expanded="false" />
+                    <element signature="e#13804#14106#0" expanded="false" />
+                    <element signature="e#14154#14354#0" expanded="false" />
+                    <element signature="e#14405#14655#0" expanded="false" />
+                    <element signature="e#14703#14891#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -84,7 +84,7 @@
             <entry file="file://$PROJECT_DIR$/VizFSN.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="174" column="12" selection-start-line="174" selection-start-column="12" selection-end-line="174" selection-end-column="12" />
+                  <caret line="164" column="16" selection-start-line="164" selection-start-column="16" selection-end-line="164" selection-end-column="16" />
                   <folding>
                     <element signature="e#24#45#0" expanded="true" />
                   </folding>
@@ -96,9 +96,9 @@
             <entry file="file://$PROJECT_DIR$/AtomFS.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="46" column="20" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="21" />
+                  <caret line="222" column="10" selection-start-line="222" selection-start-column="10" selection-end-line="222" selection-end-column="10" />
                   <folding>
-                    <element signature="e#932#1201#1" expanded="false" />
+                    <element signature="e#937#1206#1" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -128,10 +128,10 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1296" />
-    <option name="height" value="816" />
+    <option name="x" value="-359" />
+    <option name="y" value="-1160" />
+    <option name="width" value="2064" />
+    <option name="height" value="1168" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -186,21 +186,21 @@
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="recentsLimit" value="5" />
     <property name="FullScreen" value="false" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="159" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="341" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="182" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="364" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="183" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="366" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder2" value="2" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="713" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="934" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder3" value="3" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="177" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="369" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="176" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="368" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder1" value="1" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="177" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="369" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="707" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="899" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
     <property name="settings.editor.splitter.proportion" value="0.21645446" />
@@ -465,11 +465,17 @@
       <option name="project" value="LOCAL" />
       <updated>1440162371181</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Flat learning for the stochastic branch environment (stochastic T-maze) is working with reentry (one environmental time step is processed by a number of internal network updates).">
+      <created>1440839768311</created>
+      <option name="number" value="00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1440839768311</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1296" height="816" extended-state="6" />
+    <frame x="-359" y="-1160" width="2064" height="1168" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.1921875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -477,21 +483,21 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3272472" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32365748" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3258427" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24609375" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32518798" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.168125" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32881773" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282532" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24609375" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -506,13 +512,15 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="New changelist" />
     <MESSAGE value="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;.spyderworkspace&#10;&#9;FSN.session.tar&#10;" />
+    <MESSAGE value="Flat learning for the stochastic branch environment (stochastic T-maze) is working with reentry (one environmental time step is processed by a number of internal network updates)." />
+    <option name="LAST_COMMIT_MESSAGE" value="Flat learning for the stochastic branch environment (stochastic T-maze) is working with reentry (one environmental time step is processed by a number of internal network updates)." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="23" />
+      <option name="time" value="25" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -559,16 +567,15 @@
             <element signature="e#1326#1993#0" expanded="false" />
             <element signature="e#2041#2533#0" expanded="false" />
             <element signature="e#2588#3009#0" expanded="false" />
-            <element signature="e#3053#4229#0" expanded="false" />
-            <element signature="e#6416#6498#1" expanded="false" />
-            <element signature="e#10662#10846#0" expanded="false" />
-            <element signature="e#11420#11548#0" expanded="false" />
-            <element signature="e#12219#12995#0" expanded="false" />
-            <element signature="e#13033#13592#0" expanded="false" />
-            <element signature="e#13639#13941#0" expanded="false" />
-            <element signature="e#13989#14189#0" expanded="false" />
-            <element signature="e#14240#14490#0" expanded="false" />
-            <element signature="e#14538#14726#0" expanded="false" />
+            <element signature="e#6581#6663#1" expanded="false" />
+            <element signature="e#10827#11011#0" expanded="false" />
+            <element signature="e#11585#11713#0" expanded="false" />
+            <element signature="e#12384#13160#0" expanded="false" />
+            <element signature="e#13198#13757#0" expanded="false" />
+            <element signature="e#13804#14106#0" expanded="false" />
+            <element signature="e#14154#14354#0" expanded="false" />
+            <element signature="e#14405#14655#0" expanded="false" />
+            <element signature="e#14703#14891#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -588,7 +595,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#932#1201#1" expanded="false" />
+            <element signature="e#937#1206#1" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -659,16 +666,15 @@
             <element signature="e#1326#1993#0" expanded="false" />
             <element signature="e#2041#2533#0" expanded="false" />
             <element signature="e#2588#3009#0" expanded="false" />
-            <element signature="e#3053#4229#0" expanded="false" />
-            <element signature="e#6416#6498#1" expanded="false" />
-            <element signature="e#10662#10846#0" expanded="false" />
-            <element signature="e#11420#11548#0" expanded="false" />
-            <element signature="e#12219#12995#0" expanded="false" />
-            <element signature="e#13033#13592#0" expanded="false" />
-            <element signature="e#13639#13941#0" expanded="false" />
-            <element signature="e#13989#14189#0" expanded="false" />
-            <element signature="e#14240#14490#0" expanded="false" />
-            <element signature="e#14538#14726#0" expanded="false" />
+            <element signature="e#6581#6663#1" expanded="false" />
+            <element signature="e#10827#11011#0" expanded="false" />
+            <element signature="e#11585#11713#0" expanded="false" />
+            <element signature="e#12384#13160#0" expanded="false" />
+            <element signature="e#13198#13757#0" expanded="false" />
+            <element signature="e#13804#14106#0" expanded="false" />
+            <element signature="e#14154#14354#0" expanded="false" />
+            <element signature="e#14405#14655#0" expanded="false" />
+            <element signature="e#14703#14891#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -678,7 +684,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#932#1201#1" expanded="false" />
+            <element signature="e#937#1206#1" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -749,16 +755,15 @@
             <element signature="e#1326#1993#0" expanded="false" />
             <element signature="e#2041#2533#0" expanded="false" />
             <element signature="e#2588#3009#0" expanded="false" />
-            <element signature="e#3053#4229#0" expanded="false" />
-            <element signature="e#6416#6498#1" expanded="false" />
-            <element signature="e#10662#10846#0" expanded="false" />
-            <element signature="e#11420#11548#0" expanded="false" />
-            <element signature="e#12219#12995#0" expanded="false" />
-            <element signature="e#13033#13592#0" expanded="false" />
-            <element signature="e#13639#13941#0" expanded="false" />
-            <element signature="e#13989#14189#0" expanded="false" />
-            <element signature="e#14240#14490#0" expanded="false" />
-            <element signature="e#14538#14726#0" expanded="false" />
+            <element signature="e#6581#6663#1" expanded="false" />
+            <element signature="e#10827#11011#0" expanded="false" />
+            <element signature="e#11585#11713#0" expanded="false" />
+            <element signature="e#12384#13160#0" expanded="false" />
+            <element signature="e#13198#13757#0" expanded="false" />
+            <element signature="e#13804#14106#0" expanded="false" />
+            <element signature="e#14154#14354#0" expanded="false" />
+            <element signature="e#14405#14655#0" expanded="false" />
+            <element signature="e#14703#14891#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -789,7 +794,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#932#1201#1" expanded="false" />
+            <element signature="e#937#1206#1" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -803,16 +808,15 @@
             <element signature="e#1326#1993#0" expanded="false" />
             <element signature="e#2041#2533#0" expanded="false" />
             <element signature="e#2588#3009#0" expanded="false" />
-            <element signature="e#3053#4229#0" expanded="false" />
-            <element signature="e#6416#6498#1" expanded="false" />
-            <element signature="e#10662#10846#0" expanded="false" />
-            <element signature="e#11420#11548#0" expanded="false" />
-            <element signature="e#12219#12995#0" expanded="false" />
-            <element signature="e#13033#13592#0" expanded="false" />
-            <element signature="e#13639#13941#0" expanded="false" />
-            <element signature="e#13989#14189#0" expanded="false" />
-            <element signature="e#14240#14490#0" expanded="false" />
-            <element signature="e#14538#14726#0" expanded="false" />
+            <element signature="e#6581#6663#1" expanded="false" />
+            <element signature="e#10827#11011#0" expanded="false" />
+            <element signature="e#11585#11713#0" expanded="false" />
+            <element signature="e#12384#13160#0" expanded="false" />
+            <element signature="e#13198#13757#0" expanded="false" />
+            <element signature="e#13804#14106#0" expanded="false" />
+            <element signature="e#14154#14354#0" expanded="false" />
+            <element signature="e#14405#14655#0" expanded="false" />
+            <element signature="e#14703#14891#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -846,7 +850,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#932#1201#1" expanded="false" />
+            <element signature="e#937#1206#1" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -874,16 +878,15 @@
             <element signature="e#1326#1993#0" expanded="false" />
             <element signature="e#2041#2533#0" expanded="false" />
             <element signature="e#2588#3009#0" expanded="false" />
-            <element signature="e#3053#4229#0" expanded="false" />
-            <element signature="e#6416#6498#1" expanded="false" />
-            <element signature="e#10662#10846#0" expanded="false" />
-            <element signature="e#11420#11548#0" expanded="false" />
-            <element signature="e#12219#12995#0" expanded="false" />
-            <element signature="e#13033#13592#0" expanded="false" />
-            <element signature="e#13639#13941#0" expanded="false" />
-            <element signature="e#13989#14189#0" expanded="false" />
-            <element signature="e#14240#14490#0" expanded="false" />
-            <element signature="e#14538#14726#0" expanded="false" />
+            <element signature="e#6581#6663#1" expanded="false" />
+            <element signature="e#10827#11011#0" expanded="false" />
+            <element signature="e#11585#11713#0" expanded="false" />
+            <element signature="e#12384#13160#0" expanded="false" />
+            <element signature="e#13198#13757#0" expanded="false" />
+            <element signature="e#13804#14106#0" expanded="false" />
+            <element signature="e#14154#14354#0" expanded="false" />
+            <element signature="e#14405#14655#0" expanded="false" />
+            <element signature="e#14703#14891#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -917,7 +920,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#932#1201#1" expanded="false" />
+            <element signature="e#937#1206#1" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -945,16 +948,15 @@
             <element signature="e#1326#1993#0" expanded="false" />
             <element signature="e#2041#2533#0" expanded="false" />
             <element signature="e#2588#3009#0" expanded="false" />
-            <element signature="e#3053#4229#0" expanded="false" />
-            <element signature="e#6416#6498#1" expanded="false" />
-            <element signature="e#10662#10846#0" expanded="false" />
-            <element signature="e#11420#11548#0" expanded="false" />
-            <element signature="e#12219#12995#0" expanded="false" />
-            <element signature="e#13033#13592#0" expanded="false" />
-            <element signature="e#13639#13941#0" expanded="false" />
-            <element signature="e#13989#14189#0" expanded="false" />
-            <element signature="e#14240#14490#0" expanded="false" />
-            <element signature="e#14538#14726#0" expanded="false" />
+            <element signature="e#6581#6663#1" expanded="false" />
+            <element signature="e#10827#11011#0" expanded="false" />
+            <element signature="e#11585#11713#0" expanded="false" />
+            <element signature="e#12384#13160#0" expanded="false" />
+            <element signature="e#13198#13757#0" expanded="false" />
+            <element signature="e#13804#14106#0" expanded="false" />
+            <element signature="e#14154#14354#0" expanded="false" />
+            <element signature="e#14405#14655#0" expanded="false" />
+            <element signature="e#14703#14891#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1011,7 +1013,7 @@
     <entry file="file://$PROJECT_DIR$/VizFSN.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="174" column="12" selection-start-line="174" selection-start-column="12" selection-end-line="174" selection-end-column="12" />
+          <caret line="164" column="16" selection-start-line="164" selection-start-column="16" selection-end-line="164" selection-end-column="16" />
           <folding>
             <element signature="e#24#45#0" expanded="true" />
           </folding>
@@ -1021,40 +1023,39 @@
     <entry file="file://$PROJECT_DIR$/AtomFS.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="46" column="20" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="21" />
+          <caret line="222" column="10" selection-start-line="222" selection-start-column="10" selection-end-line="222" selection-end-column="10" />
           <folding>
-            <element signature="e#932#1201#1" expanded="false" />
+            <element signature="e#937#1206#1" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/FSNpy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7765487">
-          <caret line="34" column="38" selection-start-line="34" selection-start-column="38" selection-end-line="34" selection-end-column="38" />
+        <state vertical-scroll-proportion="0.77799225">
+          <caret line="281" column="44" selection-start-line="281" selection-start-column="44" selection-end-line="281" selection-end-column="44" />
           <folding>
             <element signature="e#262#420#0" expanded="false" />
             <element signature="e#1326#1993#0" expanded="false" />
             <element signature="e#2041#2533#0" expanded="false" />
             <element signature="e#2588#3009#0" expanded="false" />
-            <element signature="e#3053#4229#0" expanded="false" />
-            <element signature="e#6416#6498#1" expanded="false" />
-            <element signature="e#10662#10846#0" expanded="false" />
-            <element signature="e#11420#11548#0" expanded="false" />
-            <element signature="e#12219#12995#0" expanded="false" />
-            <element signature="e#13033#13592#0" expanded="false" />
-            <element signature="e#13639#13941#0" expanded="false" />
-            <element signature="e#13989#14189#0" expanded="false" />
-            <element signature="e#14240#14490#0" expanded="false" />
-            <element signature="e#14538#14726#0" expanded="false" />
+            <element signature="e#6581#6663#1" expanded="false" />
+            <element signature="e#10827#11011#0" expanded="false" />
+            <element signature="e#11585#11713#0" expanded="false" />
+            <element signature="e#12384#13160#0" expanded="false" />
+            <element signature="e#13198#13757#0" expanded="false" />
+            <element signature="e#13804#14106#0" expanded="false" />
+            <element signature="e#14154#14354#0" expanded="false" />
+            <element signature="e#14405#14655#0" expanded="false" />
+            <element signature="e#14703#14891#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ManipulatorHack/StochasticTMazel_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33849558">
-          <caret line="160" column="37" selection-start-line="160" selection-start-column="37" selection-end-line="160" selection-end-column="37" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="160" column="7" selection-start-line="160" selection-start-column="7" selection-end-line="160" selection-end-column="7" />
           <folding>
             <element signature="e#24#185#1" expanded="false" />
             <element signature="e#293#638#1" expanded="false" />
