@@ -157,8 +157,8 @@ def setTransitionsDiag(dimension):
 
 # -------------------------
 convergenceLoops = 2  # a number of FS network updates per world's state update
-period = 5000  # a period of simulation
-dim = 7  # a dimension of a hypercube
+period = 500  # a period of simulation
+dim = 3  # a dimension of a hypercube
 drawFSNet = False  # draw FSNet for every FS addition
 printLog = True
 stochEnv = True  # stochasticity of the environment

@@ -220,7 +220,6 @@ class AtomFS:
 
         self.wasActive.pop(0)
         self.wasActive.append(self.isActive)
-        # self.oldActivity = self.activity
 
         return self.calcCore(time)
 
@@ -255,4 +254,5 @@ class AtomFS:
         self.activity = 0
         self.oldActivity = 0
 
-        # end of AtomFS class
+
+# end of AtomFS class

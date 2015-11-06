@@ -95,27 +95,23 @@ class FSNetwork:
         self.net[fs].problemState = {k: self.net[k].oldActivity
                                      for k in self.net[fs].problemWeights.iterkeys()
                                      if not self.net[k].wasUsed and self.net[k].isActive}
-        # if not self.net[k].isLearning}
         self.net[fs].goalState = {k: self.net[k].oldActivity
                                   for k in self.net[fs].goalWeights.iterkeys()
                                   if not self.net[k].wasUsed and self.net[k].isActive}
-        # if not self.net[k].isLearning}
         self.net[fs].lateralState = {k: self.net[k].oldActivity
                                      for k in self.net[fs].lateralWeights.iterkeys()
                                      if not self.net[k].wasUsed and self.net[k].isActive}
-        # if self.net[k].isActive and not self.net[k].isLearning}
         self.net[fs].controlState = {k: self.net[k].oldActivity
                                      for k in self.net[fs].controlWeights.iterkeys()
                                      if not self.net[k].wasUsed and self.net[k].isActive}
-        # if not self.net[k].isLearning}
 
     def update(self, time, inputStates, t):
-        """updates the network given values of activations for input elements"""
+        """feedforward update of the network given values of activations for input elements"""
 
         self.activation = {}  # dict with {fsID, activation}
         self.mismatch = {}
 
-        # activate elements (FSs) corresponding to the inputs
+        # activate elements (FSs) corresponding to the inputs with input values
         self.activateFS(inputStates)
 
         # updating goal FSs
@@ -132,26 +128,7 @@ class FSNetwork:
             self.activation[fs], self.mismatch[fs] = self.hiddenFS[fs].update(time)
 
         # updating action FSs
-        noActiveOut = True
-        maxOut = (0, 0)
-        for fs in self.outFS.values():
-            self.updateFSInputs(fs.ID)
-            self.activation[fs.ID], self.mismatch[fs.ID] = fs.update(time)
-            fs.wasUsed = False
-            if fs.activity > maxOut[1]:
-                maxOut = (fs.ID, fs.activity)
-                if fs.isActive:
-                    noActiveOut = False
-        if noActiveOut:
-            if maxOut[1] == 0:
-                fs = random.sample(self.outFS.keys(), 1)
-                self.outFS[fs[0]].isActive = True
-            else:
-                self.outFS[probSel(self.outFS.values())].isActive = True
-        else:
-            for fs in self.outFS.values():
-                if fs.isActive and fs.ID != maxOut[0]:
-                    fs.isActive = False
+        self.updOut(time)
 
         # re-checking goal FSs
         for fs in self.goalFS.values():
@@ -164,6 +141,7 @@ class FSNetwork:
             fs.oldActivity = fs.activity
 
         self.logActivity(time, t)
+
 
     def step(self, time, inputStates):
 
@@ -179,6 +157,7 @@ class FSNetwork:
         self.learn(time)
 
         return self.activation
+
 
     def learn(self, time):
         """ modifies network structure to save new experience
@@ -276,6 +255,28 @@ class FSNetwork:
                 del self.memoryTrace[fs.ID]
                 # print "fs:", fs.ID, "is deleted. tau =", fs.tau
                 self.removeFS(fs.ID)
+
+    def updOut(self, time):
+        noActiveOut = True
+        maxOut = (0, 0)
+        for fs in self.outFS.values():
+            self.updateFSInputs(fs.ID)
+            self.activation[fs.ID], self.mismatch[fs.ID] = fs.update(time)
+            fs.wasUsed = False
+            if fs.activity > maxOut[1]:
+                maxOut = (fs.ID, fs.activity)
+                if fs.isActive:
+                    noActiveOut = False
+        if noActiveOut:
+            if maxOut[1] == 0:
+                fs = random.sample(self.outFS.keys(), 1)
+                self.outFS[fs[0]].isActive = True
+            else:
+                self.outFS[probSel(self.outFS.values())].isActive = True
+        else:
+            for fs in self.outFS.values():
+                if fs.isActive and fs.ID != maxOut[0]:
+                    fs.isActive = False
 
     def resetUsedFS(self, gFS):
         """ reactivates hidden FS that were used for the completion of the goal represented by gFS
